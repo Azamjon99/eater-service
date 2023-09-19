@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/iDiyor/eater-service/src/infrastructure/rand"
+	"eater-service/src/infrastructure/rand"
 )
 
 type Service interface {

@@ -1,10 +1,9 @@
-package repository
+package repositories
 
 import (
 	"context"
 	"eater-service/src/domain/eater/models"
 )
-
 
 type EaterRepository interface {
 	WithTx(ctx context.Context, f func(r EaterRepository) error) error
@@ -20,4 +19,4 @@ type EaterRepository interface {
 	UpdateEaterProfilePhoneNumberConfirmed(ctx context.Context, eaterID string, confirmed bool) error
 	DeleteEaterProfile(ctx context.Context, eaterID string) error
 	GetEaterProfile(ctx context.Context, eaterID string) (*models.EaterProfile, error)
-	}
+}

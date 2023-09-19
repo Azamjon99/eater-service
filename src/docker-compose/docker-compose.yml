@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  server-app:
+    image: server-app
+    container_name: server-app-container
+    environment:
+      - HTTP_ADDR=:2020
+      - DATA_DIR_PATH=./data
+    ports:
+      - "1010:2020"
+    restart: always
+    networks: 
+      - my-network
+    volumes:
+     - ${PWD}/data:/data
+  client-app:
+    image: client-app
+    container_name: client-app-container
+    environment:
+      - SERVER_ADDR=http://server-app:2020
+    restart: always
+    depends_on:
+      - server-app
+    networks: 
+      - my-network
+
+networks:
+  my-network: 
+    external: true
+    

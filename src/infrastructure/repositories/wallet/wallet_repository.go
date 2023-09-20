@@ -23,20 +23,7 @@ func NewRepository(db *gorm.DB) repositories.WalletRepository {
 	}
 }
 
-func (r *walletRepoImpl) WithTx(ctx context.Context, callback func(r repositories.WalletRepository) error) error {
-	if err := r.db.Transaction(func(tx *gorm.DB) error {
-		r := walletRepoImpl{
-			db: tx,
-		}
-		if err := callback(&r); err != nil {
-			return err
-		}
-		return nil
-	}); err != nil {
-		return err
-	}
-	return nil
-}
+
 
 func (r *walletRepoImpl) AddCard(ctx context.Context, wallet *models.PaymentCard) error {
 	result := r.db.WithContext(ctx).Table(tablePaymentCard).Create(wallet)

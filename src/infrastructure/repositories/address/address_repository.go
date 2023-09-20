@@ -23,20 +23,7 @@ func NewRepository(db *gorm.DB) repositories.AddressRepository {
 	}
 }
 
-func (r *addressRepoImpl) WithTx(ctx context.Context, callback func(r repositories.AddressRepository) error) error {
-	if err := r.db.Transaction(func(tx *gorm.DB) error {
-		r := addressRepoImpl{
-			db: tx,
-		}
-		if err := callback(&r); err != nil {
-			return err
-		}
-		return nil
-	}); err != nil {
-		return err
-	}
-	return nil
-}
+
 
 func (r *addressRepoImpl) CreateAddress(ctx context.Context, address *models.Address) error {
 	result := r.db.WithContext(ctx).Table(tableAddress).Create(address)

@@ -38,13 +38,8 @@ func (s *ratingSvcImpl) RateRestaurant(ctx context.Context, eaterID string, rest
 		CreatedAt:    time.Now().UTC(),
 	}
 
-	err := s.ratingRepo.WithTx(ctx, func(r repositories.RatingRepository) error {
-		if err := r.RateRestaurant(ctx, restaurantRating); err != nil {
-			return err
-		}
-
-		return nil
-	})
+	err := s.ratingRepo.RateRestaurant(ctx, restaurantRating); 
+			
 	if err != nil {
 		return nil, err
 	}
@@ -62,13 +57,7 @@ func (s *ratingSvcImpl) UpdateRestaurantRating(ctx context.Context, restaurantRa
 		UpdatedAt: time.Now().UTC(),
 	}
 
-	err := s.ratingRepo.WithTx(ctx, func(r repositories.RatingRepository) error {
-		if err := r.UpdateRestaurantRating(ctx, restaurantRating); err != nil {
-			return err
-		}
-
-		return nil
-	})
+	err := s.ratingRepo.UpdateRestaurantRating(ctx, restaurantRating)
 	if err != nil {
 		return nil, err
 	}
@@ -98,13 +87,8 @@ func (s *ratingSvcImpl) RateDelivery(ctx context.Context, eaterID string, orderI
 		CreatedAt: time.Now().UTC(),
 	}
 
-	err := s.ratingRepo.WithTx(ctx, func(r repositories.RatingRepository) error {
-		if err := r.RateDelivery(ctx, deliveryRating); err != nil {
-			return err
-		}
-
-		return nil
-	})
+	err := s.ratingRepo.RateDelivery(ctx, deliveryRating) 
+		
 	if err != nil {
 		return nil, err
 	}
@@ -122,13 +106,7 @@ func (s *ratingSvcImpl) UpdateDeliveryRating(ctx context.Context, deliveryRating
 		UpdatedAt: time.Now().UTC(),
 	}
 
-	err := s.ratingRepo.WithTx(ctx, func(r repositories.RatingRepository) error {
-		if err := r.UpdateDeliveryRating(ctx, deliveryRating); err != nil {
-			return err
-		}
-
-		return nil
-	})
+	err := s.ratingRepo.UpdateDeliveryRating(ctx, deliveryRating);
 	if err != nil {
 		return nil, err
 	}

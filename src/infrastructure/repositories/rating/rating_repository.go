@@ -24,20 +24,7 @@ func NewRepository(db *gorm.DB) repositories.RatingRepository {
 	}
 }
 
-func (r *ratingRepoImpl) WithTx(ctx context.Context, callback func(r repositories.RatingRepository) error) error {
-	if err := r.db.Transaction(func(tx *gorm.DB) error {
-		r := ratingRepoImpl{
-			db: tx,
-		}
-		if err := callback(&r); err != nil {
-			return err
-		}
-		return nil
-	}); err != nil {
-		return err
-	}
-	return nil
-}
+
 
 func (r *ratingRepoImpl) RateRestaurant(ctx context.Context, restaurantRatings *models.RestaurantRating) error {
 	result := r.db.WithContext(ctx).Table(tableRestaurantRating).Create(restaurantRatings)

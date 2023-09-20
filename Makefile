@@ -14,3 +14,4 @@ chmod +x ${PWD}/bin/${SERVICE}
 bin-windows: clear
 CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -a -installsuffix cgo -o ${PWD}/bin/${SERVICE} ${PWD}/main.go
 chmod +x ${PWD}/bin/${SERVICE}
+

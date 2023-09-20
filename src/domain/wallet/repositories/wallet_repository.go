@@ -6,7 +6,6 @@ import (
 )
 
 type WalletRepository interface {
-	WithTx(ctx context.Context, f func(r WalletRepository) error) error
 	AddCard(ctx context.Context, payment_card *models.PaymentCard) error
 	DeleteCard(ctx context.Context, cardId string) error
 	GetCardInfo(ctx context.Context, cardId string) (*models.PaymentCard, error)

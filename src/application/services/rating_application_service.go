@@ -80,13 +80,13 @@ func (s *ratingAppSvcImpl) UpdateRestaurantRating(ctx context.Context, restauran
 	return &response, nil
 }
 
-func (s *ratingAppSvcImpl) ListRestaurantRatingEaterId(ctx context.Context, eaterId string) (*dtos.ListRestaurantRatingResponse, error) {
+func (s *ratingAppSvcImpl) ListRestaurantRatingEaterId(ctx context.Context, eaterID string, sort string, page int, pageSize int) (*dtos.ListRestaurantRatingResponse, error) {
 
-	if eaterId == "" {
-		return nil, fmt.Errorf("Invalid or missing eaterId: %s", eaterId)
+	if eaterID == "" {
+		return nil, fmt.Errorf("Invalid or missing eaterId: %s", eaterID)
 	}
 
-	restaurantRating, err := s.ratingSvc.ListRestaurantRatingEaterId(ctx, eaterId)
+	restaurantRating, err := s.ratingSvc.ListRestaurantRatingEaterId(ctx, eaterID, sort , page , pageSize )
 	if err != nil {
 		return nil, err
 	}
@@ -159,13 +159,13 @@ func (s *ratingAppSvcImpl) GetDeliveryRatingByOrderId(ctx context.Context, order
 	return dtos.NewGetDeliveryRatingResponse(deliveryRating), nil
 }
 
-func (s *ratingAppSvcImpl) ListDeliveryRatingByEaterId(ctx context.Context, eaterId string) (*dtos.ListDeliveryRatingResponse, error) {
+func (s *ratingAppSvcImpl) ListDeliveryRatingByEaterId(ctx context.Context, eaterId string, sort string, page, pageSize int) (*dtos.ListDeliveryRatingResponse, error) {
 
 	if eaterId == "" {
 		return nil, fmt.Errorf("Invalid or missing eaterId: %s", eaterId)
 	}
 
-	deliveryRating, err := s.ratingSvc.ListDeliveryRatingByEaterId(ctx, eaterId)
+	deliveryRating, err := s.ratingSvc.ListDeliveryRatingByEaterId(ctx, eaterId,sort , page, pageSize )
 	if err != nil {
 		return nil, err
 	}

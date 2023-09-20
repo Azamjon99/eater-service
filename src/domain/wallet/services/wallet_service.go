@@ -35,13 +35,7 @@ func (s *walletSvcImpl) AddCard(ctx context.Context, eaterId, number, cardToken,
 		CreatedAt:  time.Now().UTC(),
 	}
 
-	err := s.walletRepo.WithTx(ctx, func(r repositories.WalletRepository) error {
-		if err := r.AddCard(ctx, paymentCard); err != nil {
-			return err
-		}
-
-		return nil
-	})
+	err := s.walletRepo.AddCard(ctx, paymentCard); 
 	if err != nil {
 		return nil, err
 	}
@@ -52,13 +46,7 @@ func (s *walletSvcImpl) AddCard(ctx context.Context, eaterId, number, cardToken,
 
 func (s *walletSvcImpl) DeleteCard(ctx context.Context, cardID string) (*models.PaymentCard, error) {
 
-	err := s.walletRepo.WithTx(ctx, func(r repositories.WalletRepository) error {
-		if err := r.DeleteCard(ctx, cardID); err != nil {
-			return err
-		}
-
-		return nil
-	})
+	err := s.walletRepo.DeleteCard(ctx, cardID); 
 	if err != nil {
 		return nil, err
 	}

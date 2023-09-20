@@ -39,13 +39,7 @@ func (s *orderSvcImpl) CreateOrder(ctx context.Context, eaterId string, instruct
 		UpdatedAt:    time.Now().UTC(),
 	}
 
-	err := s.orderRepo.WithTx(ctx, func(r repositories.OrderRepository) error {
-		if err := r.CreateOrder(ctx, order); err != nil {
-			return err
-		}
-
-		return nil
-	})
+	err := s.orderRepo.CreateOrder(ctx, order)
 	if err != nil {
 		return nil, err
 	}
@@ -63,13 +57,8 @@ func (s *orderSvcImpl) UpdateOrder(ctx context.Context, orderId string, instruct
 		UpdatedAt:    time.Now().UTC(),
 	}
 
-	err := s.orderRepo.WithTx(ctx, func(r repositories.OrderRepository) error {
-		if err := r.UpdateOrder(ctx, order); err != nil {
-			return err
-		}
-
-		return nil
-	})
+	
+	 err := s.orderRepo.UpdateOrder(ctx, order);
 	if err != nil {
 		return nil, err
 	}
@@ -86,13 +75,7 @@ func (s *orderSvcImpl) UpdateOrderByStatus(ctx context.Context, orderId string, 
 		UpdatedAt: time.Now().UTC(),
 	}
 
-	err := s.orderRepo.WithTx(ctx, func(r repositories.OrderRepository) error {
-		if err := r.UpdateOrderByStatus(ctx, orderId, status); err != nil {
-			return err
-		}
-
-		return nil
-	})
+	 err := s.orderRepo.UpdateOrderByStatus(ctx, orderId, status); 
 
 	if err != nil {
 		return nil, err
@@ -109,14 +92,7 @@ func (s *orderSvcImpl) UpdateOrderPaymentByStatus(ctx context.Context, orderId s
 		UpdatedAt:     time.Now().UTC(),
 	}
 
-	err := s.orderRepo.WithTx(ctx, func(r repositories.OrderRepository) error {
-		if err := r.UpdateOrderPaymentByStatus(ctx, orderId, paymentStatus); err != nil {
-			return err
-		}
-
-		return nil
-	})
-
+	order, err := s.UpdateOrderPaymentByStatus(ctx, orderId, paymentStatus); 
 	if err != nil {
 		return nil, err
 	}
@@ -126,13 +102,8 @@ func (s *orderSvcImpl) UpdateOrderPaymentByStatus(ctx context.Context, orderId s
 
 func (s *orderSvcImpl) DeleteOrder(ctx context.Context, orderId string) (*models.Order, error) {
 
-	err := s.orderRepo.WithTx(ctx, func(r repositories.OrderRepository) error {
-		if err := r.DeleteOrder(ctx, orderId); err != nil {
-			return err
-		}
+	 err :=   s.orderRepo.DeleteOrder(ctx, orderId);
 
-		return nil
-	})
 	if err != nil {
 		return nil, err
 	}

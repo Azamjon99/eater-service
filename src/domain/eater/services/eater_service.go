@@ -167,24 +167,14 @@ func (s *eaterSvcImpl) GetEaterProfile(ctx context.Context, eaterID string) (*mo
 
 func (s *eaterSvcImpl) UpdateEaterProfile(ctx context.Context, eaterID, name, imageUrl string) (*models.EaterProfile, error) {
 
-	eater_profile := &models.EaterProfile{
-		EaterID:   eaterID,
-		Name:      name,
-		ImageUrl:  imageUrl,
-		UpdatedAt: time.Now().UTC(),
+	eaterProfile, err := s.eaterRepo.GetEaterProfile(ctx,eaterID)
+	if err != nil{
+		return nil,err
 	}
+	
+	eaterProfile.Name = name
+	eaterProfile.ImageUrl = imageUrl
+	err = s.eaterRepo.UpdateEaterProfile(ctx,eaterProfile)
 
-	err := s.eaterRepo.WithTx(ctx, func(r repositories.EaterRepository) error {
-		if err := r.UpdateEaterProfile(ctx, eater_profile); err != nil {
-			return err
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return eater_profile, nil
+	return eaterProfile,nil
 }

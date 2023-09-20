@@ -6,7 +6,6 @@ import (
 )
 
 type AddressRepository interface {
-	WithTx(ctx context.Context, f func(r AddressRepository) error) error
 	CreateAddress(ctx context.Context, address *models.Address) error
 	UpdateAddress(ctx context.Context, address *models.Address) error
 	DeleteAddress(ctx context.Context, addressId string) error

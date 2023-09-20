@@ -42,18 +42,9 @@ func (s *addressSvcImpl) CreateAddress(ctx context.Context, eaterId string, name
 		UpdatedAt: time.Now().UTC(),
 	}
 
-	err := s.addressRepo.WithTx(ctx, func(r repositories.AddressRepository) error {
-		if err := r.CreateAddress(ctx, address); err != nil {
-			return err
-		}
+	err := s.addressRepo.CreateAddress(ctx,address)
 
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return address, nil
+	return address,err
 
 }
 
@@ -71,35 +62,17 @@ func (s *addressSvcImpl) UpdateAddress(ctx context.Context, addressId string, na
 		UpdatedAt: time.Now().UTC(),
 	}
 
-	err := s.addressRepo.WithTx(ctx, func(r repositories.AddressRepository) error {
-		if err := r.UpdateAddress(ctx, address); err != nil {
-			return err
-		}
+		
+	err := s.addressRepo.UpdateAddress(ctx,address)
 
-		return nil
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return address, nil
+	return address,err
 }
 
 func (s *addressSvcImpl) DeleteAddress(ctx context.Context, addressId string) (*models.Address, error) {
 
-	err := s.addressRepo.WithTx(ctx, func(r repositories.AddressRepository) error {
-		if err := r.DeleteAddress(ctx, addressId); err != nil {
-			return err
-		}
+	
 
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return nil, nil
+	return s.DeleteAddress(ctx, addressId)
 }
 
 func (s *addressSvcImpl) GetAddressById(ctx context.Context, addressId string) (*models.Address, error) {

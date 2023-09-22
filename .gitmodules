@@ -1,0 +1,3 @@
+[submodule "my_protos"]
+	path = src/infrastructure/protos
+	url = git@github.com:Azamjon99/services-proto.git

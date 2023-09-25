@@ -8,10 +8,12 @@ import (
 	eatersvc "eater-service/src/domain/eater/services"
 	"eater-service/src/infrastructure/jwt"
 	"eater-service/src/infrastructure/validator"
+	pb "eater-service/src/application/protos/eater"
+
 )
 
 type EaterApplicationService interface {
-	SignupEater(ctx context.Context, phoneNumber string) (*dtos.EaterSignupResponse, error)
+	SignupEater(ctx context.Context, req *pb.SignupEaterRequest) (*pb.SignupEaterResponse, error)
 	ConfirmSMSCode(ctx context.Context, eaterID, smsCode string) (*dtos.ConfirmSMSCodeResponse, error)
 	UpdateEaterProfile(ctx context.Context, eaterID, name, imageUrl string) (*dtos.UpdateEaterProfileResponse, error)
 	GetEaterProfile(ctx context.Context, eaterID string) (*dtos.GetEaterProfileResponse, error)
@@ -32,16 +34,18 @@ func NewEaterApplicationService(
 	}
 }
 
-func (s *eaterAppSvcImpl) SignupEater(ctx context.Context, phoneNumber string) (*dtos.EaterSignupResponse, error) {
-	if !validator.ValidateUzPhoneNumber(phoneNumber) {
+func (s *eaterAppSvcImpl) SignupEater(ctx context.Context, req *pb.SignupEaterRequest) (*pb.SignupEaterResponse, error) {
+	if !validator.ValidateUzPhoneNumber(req.PhoneNumber) {
 		return nil, errors.New("invalid phonr number. ")
 	}
-	eaterId, err := s.eaterSvc.SignupEater(ctx, phoneNumber)
+	eaterId, err := s.eaterSvc.SignupEater(ctx, req.PhoneNumber)
 	if err != nil {
 		return nil, err
 	}
 
-	return dtos.NewEaterSignupResponse(eaterId), nil
+	return &pb.SignupEaterResponse{
+		EaterId: eaterId,
+	},nil
 }
 
 func (s *eaterAppSvcImpl) ConfirmSMSCode(ctx context.Context, eaterID, smsCode string) (*dtos.ConfirmSMSCodeResponse, error) {

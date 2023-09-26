@@ -2,14 +2,13 @@ package service
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"eater-service/src/application/dtos"
+	pb "eater-service/src/application/protos/eater"
 	eatersvc "eater-service/src/domain/eater/services"
 	"eater-service/src/infrastructure/jwt"
 	"eater-service/src/infrastructure/validator"
-	pb "eater-service/src/application/protos/eater"
-
+	"errors"
+	"fmt"
 )
  
 type EaterApplicationService interface {

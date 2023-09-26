@@ -1,19 +1,19 @@
-# PWD=$(shell pwd)
-# SERVICE=eater-svc
-# MIGRATION_PATH=${PWD}/src/infrastructure/migrations
-# migration-file:
-# docker run -v ${MIGRATION_PATH}:/migrations migrate/migrate create -ext sql -dir /migrations -seq $(NAME)
-# clear:
-# rm -rf ${PWD}/bin/${SERVICE}
-# bin: clear
-# CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -a -installsuffix cgo -o ${PWD}/bin/${SERVICE} ${PWD}/main.go
-# chmod +x ${PWD}/bin/${SERVICE}
-# bin-linux: clear
-# CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o ${PWD}/bin/${SERVICE} ${PWD}/main.go
-# chmod +x ${PWD}/bin/${SERVICE}
-# bin-windows: clear
-# CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -a -installsuffix cgo -o ${PWD}/bin/${SERVICE} ${PWD}/main.go
-# chmod +x ${PWD}/bin/${SERVICE}
+PWD=$(shell pwd)
+SERVICE=eater-svc
+MIGRATION_PATH=${PWD}/src/infrastructure/migrations
+PROTOS_PATH=$(PWD)/src/infrastructure/protos
+
+server:
+	go run main.go
+
+migration:
+	migrate create -ext sql -dir pkg/database/migrations -seq $(table)
+
+migrateup:
+	migrate -database "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable&search_path=public" -path ./pkg/database/migrations up
+
+migratedown:
+	migrate -database "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable&search_path=public" -path ./pkg/database/migrations down
 
 PWD=$(shell pwd)
 PROTOS_PATH=$(PWD)/src/infrastructure/protos
@@ -28,3 +28,30 @@ gen-eater:
 	--go-grpc_opt=paths=import \
 	-I=$(PWD)/src/infrastructure/protos/eater \
 	$(PWD)/src/infrastructure/protos/eater/*.proto
+
+
+docker: bin-lunix
+	docker build --rm -t eater-svc -f ${PWD}/deploy/Dockerfile .
+
+compose-up:
+	docker-compose -f ./deploy/docker-compose.yml up
+
+compose-down:
+	docker-compose -f ./deploy/docker-compose.yml down
+
+
+
+server-docker: server
+	docker build --rm -t server-app -f ./docker/server/Dockerfile .
+
+deploy-server:
+	docker run --rm -p 3030:3030 --name=app server-app
+
+deploy-client:
+	docker run --rm --network=host --name=app client-app
+
+compose-up:
+	docker-compose -f docker-compose/docker-compose.yml up
+
+compose-down:
+	docker-compose -f docker-compose/docker-compose.yml down	

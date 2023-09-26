@@ -2,12 +2,12 @@ package dtos
 
 import "github.com/Azamjon99/eater-service/src/domain/address/models"
 
-type ListAddressResponse struct {
-	Address []*models.Address `json:"address"`
+type GetAddressListResponse struct {
+	Addresses []*models.Address `json:"addresses"`
 }
 
-func NewListAddressResponse(address []*models.Address) *ListAddressResponse {
-	return &ListAddressResponse{
-		Address: address,
+func NewGetAddressListResponse(addresses []*models.Address) *GetAddressListResponse {
+	return &GetAddressListResponse{
+		Addresses: addresses,
 	}
 }

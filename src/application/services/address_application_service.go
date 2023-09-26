@@ -108,10 +108,6 @@ func (s *addressAppSvcImpl) GetAddressById(ctx context.Context, req *pb.GetAddre
 	if err != nil {
 		return nil, err
 	}
-
-
-
-
 	
 	return &pb.GetAddressResponse{
 		Address: dtos.NewGetAddressResponse(address),
@@ -123,14 +119,14 @@ func (s *addressAppSvcImpl) ListAddressByEaterId(ctx context.Context, req *pb.Li
 		return nil, fmt.Errorf("Invalid or missing eater_id: %s", req.EaterId)
 	}
 
-	addresses, err := s.addressSvc.ListAddressByEaterId(ctx, req.EaterId)
+	address, err := s.addressSvc.ListAddressByEaterId(ctx, req.EaterId, req.Sort, int(req.Page), int(req.PageSize))
 	if err != nil {
 		return nil, err
 	}
 
-	
 
 	return &pb.ListAddressByEaterResponse{
-		Address: address,
-	}, 
+		Address: dtos.NewListDeliveryRatingResponse(address),
+	},nil
+
 }

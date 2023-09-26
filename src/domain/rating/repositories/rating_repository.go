@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"context"
-	"eater-service/src/domain/rating/models"
+	"github.com/Azamjon99/eater-service/src/domain/rating/models"
 )
 
 type RatingRepository interface {

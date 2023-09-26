@@ -1,4 +1,4 @@
-module eater-service
+module github.com/Azamjon99/eater-service
 
 go 1.19
 

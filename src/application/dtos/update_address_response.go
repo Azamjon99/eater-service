@@ -1,7 +1,6 @@
 package dtos
 
-import "eater-service/src/domain/address/models"
-
+import "github.com/Azamjon99/eater-service/src/domain/address/models"
 
 type UpdateAddressResponse struct {
 	Address *models.Address `json:"address"`

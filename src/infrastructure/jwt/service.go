@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Azamjon99/eater-service/src/infrastructure/rand"
 	"github.com/golang-jwt/jwt/v4"
-	"eater-service/src/infrastructure/rand"
 )
 
 type Service interface {

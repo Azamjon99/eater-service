@@ -1,7 +1,6 @@
 package dtos
 
-import "eater-service/src/domain/wallet/models"
-
+import "github.com/Azamjon99/eater-service/src/domain/wallet/models"
 
 type GetPaymentCardResponse struct {
 	PaymentCard *models.PaymentCard `json:"payment_card"`

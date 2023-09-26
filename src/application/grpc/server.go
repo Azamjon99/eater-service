@@ -2,8 +2,8 @@ package grpc
 
 import (
 	"context"
-	pb "eater-service/src/application/protos/eater"
-	service "eater-service/src/application/services"
+	pb "github.com/Azamjon99/eater-service/src/application/protos/eater"
+	service "github.com/Azamjon99/eater-service/src/application/services"
 )
 type Server struct{
 	pb.EaterServiceServer

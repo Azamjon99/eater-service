@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
-	"fmt"
-	"eater-service/src/application/dtos"
-	ratingsvc "eater-service/src/domain/rating/services"
-	pb "eater-service/src/application/protos/eater"
+	
+	"github.com/Azamjon99/eater-service/src/application/dtos"
+	ratingsvc "github.com/Azamjon99/eater-service/src/domain/rating/services"
+	pb "github.com/Azamjon99/eater-service/src/application/protos/eater"
 
 )
 

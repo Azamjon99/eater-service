@@ -10,24 +10,24 @@ import (
 	"syscall"
 	"time"
 
+	grpcserver "github.com/Azamjon99/eater-service/src/application/grpc"
+	pb "github.com/Azamjon99/eater-service/src/application/protos/eater"
+	appsvc "github.com/Azamjon99/eater-service/src/application/services"
+	addresssvc "github.com/Azamjon99/eater-service/src/domain/address/services"
+	eatersvc "github.com/Azamjon99/eater-service/src/domain/eater/services"
+	orderysvc "github.com/Azamjon99/eater-service/src/domain/order/services"
+	ratingsvc "github.com/Azamjon99/eater-service/src/domain/rating/services"
+	walletsvc "github.com/Azamjon99/eater-service/src/domain/wallet/services"
+	"github.com/Azamjon99/eater-service/src/infrastructure/config"
+	"github.com/Azamjon99/eater-service/src/infrastructure/jwt"
+	addressrepo "github.com/Azamjon99/eater-service/src/infrastructure/repositories/address"
+	eaterrepo "github.com/Azamjon99/eater-service/src/infrastructure/repositories/eater"
+	orderrepo "github.com/Azamjon99/eater-service/src/infrastructure/repositories/order"
+	ratingrepo "github.com/Azamjon99/eater-service/src/infrastructure/repositories/rating"
+	walletrepo "github.com/Azamjon99/eater-service/src/infrastructure/repositories/wallet"
+	"github.com/Azamjon99/eater-service/src/infrastructure/sms"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	grpcserver "eater-service/src/application/grpc"
-	pb "eater-service/src/application/protos/eater"
-	appsvc "eater-service/src/application/services"
-	addresssvc "eater-service/src/domain/address/services"
-	eatersvc "eater-service/src/domain/eater/services"
-	ratingsvc "eater-service/src/domain/rating/services"
-	walletsvc "eater-service/src/domain/wallet/services"
-	orderysvc "eater-service/src/domain/order/services"
-	"eater-service/src/infrastructure/config"
-	"eater-service/src/infrastructure/jwt"
-	addressrepo "eater-service/src/infrastructure/repositories/address"
-	eaterrepo "eater-service/src/infrastructure/repositories/eater"
-	ratingrepo "eater-service/src/infrastructure/repositories/rating"
-	orderrepo "eater-service/src/infrastructure/repositories/order"
-	walletrepo "eater-service/src/infrastructure/repositories/wallet"
-	"eater-service/src/infrastructure/sms"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
@@ -37,8 +37,8 @@ import (
 
 func main() {
 
-	config,err := config.Load()
-	if err != nil{
+	config, err := config.Load()
+	if err != nil {
 		panic(err)
 	}
 
@@ -57,13 +57,12 @@ func main() {
 		config.PostgresDatabase,
 		60,
 	)
-	db,err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
 
 	if err != nil {
 		panic(err)
 	}
 
-	
 	smsClient := sms.NewClient(config.SmsProvideApiKey)
 	tokenSvc := jwt.NewService(config.JWTSecret, config.JWTExpiresInSec)
 	eaterRepo := eaterrepo.NewRepository(db)
@@ -71,18 +70,15 @@ func main() {
 	orderrepo := orderrepo.NewRepository(db)
 	ratingRepo := ratingrepo.NewRepository(db)
 	walletRepo := walletrepo.NewRepository(db)
-	
 
-	eaterSvc := eatersvc.NewEaterService(eaterRepo,smsClient,logger)
+	eaterSvc := eatersvc.NewEaterService(eaterRepo, smsClient, logger)
 	addressSvc := addresssvc.NewAddressService(addresRepo)
 	orderSvc := orderysvc.NewOrderService(orderrepo)
 	ratingSvc := ratingsvc.NewRatingService(ratingRepo)
 
 	walletSvc := walletsvc.NewWalletService(walletRepo)
 
-
-	
-	eaterApp := appsvc.NewEaterApplicationService(eaterSvc,tokenSvc)
+	eaterApp := appsvc.NewEaterApplicationService(eaterSvc, tokenSvc)
 	addressApp := appsvc.NewAddressApplicationService(addressSvc)
 	ratingApp := appsvc.NewRatingApplicationService(ratingSvc)
 	orderApp := appsvc.NewOrderApplicationService(orderSvc)
@@ -91,49 +87,47 @@ func main() {
 	root := gin.Default()
 
 	root.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"*"},
-		AllowMethods: []string{"*"},
-		AllowHeaders: []string{"*"},
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"*"},
+		AllowHeaders:     []string{"*"},
 		AllowCredentials: true,
 	}))
 
-	ctx,cancel := context.WithCancel(context.Background())
-	g,ctx := errgroup.WithContext(ctx)
+	ctx, cancel := context.WithCancel(context.Background())
+	g, ctx := errgroup.WithContext(ctx)
 
-	osSignals := make(chan os.Signal,1)
+	osSignals := make(chan os.Signal, 1)
 
-	signal.Notify(osSignals,os.Interrupt,syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(osSignals, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	defer signal.Stop(osSignals)
 
 	var httpServer *http.Server
 
-	g.Go(func() error{
+	g.Go(func() error {
 		httpServer = &http.Server{
-			Addr: config.HttpPort,
+			Addr:    config.HttpPort,
 			Handler: root,
 		}
 
-		logger.Debug("main: started http server", zap.String("port",config.HttpPort))
-		if err := httpServer.ListenAndServe();err != http.ErrServerClosed{
+		logger.Debug("main: started http server", zap.String("port", config.HttpPort))
+		if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
 			return err
 		}
 		return nil
 	})
 
-
 	var grpcServer *grpc.Server
 
-	g.Go(func () error {
+	g.Go(func() error {
 		server := grpcserver.NewServer(
 			eaterApp,
 			addressApp,
 			ratingApp,
 			walletApp,
 			orderApp,
-
 		)
 		grpcServer = grpc.NewServer()
-		pb.RegisterEaterServiceServer(grpcServer,server)
+		pb.RegisterEaterServiceServer(grpcServer, server)
 
 		lis, err := net.Listen("tcp", config.GrpcPort)
 		if err != nil {
@@ -141,12 +135,11 @@ func main() {
 		}
 
 		defer lis.Close()
-	
-		logger.Debug("main: started grps server", zap.String("port",config.GrpcPort))
+
+		logger.Debug("main: started grps server", zap.String("port", config.GrpcPort))
 
 		return grpcServer.Serve(lis)
 	})
-
 
 	select {
 	case <-osSignals:
@@ -158,7 +151,7 @@ func main() {
 
 	cancel()
 
-	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(),5*time.Second)
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer shutdownCancel()
 
 	if httpServer != nil {
@@ -170,6 +163,6 @@ func main() {
 	}
 
 	if err := g.Wait(); err != nil {
-		logger.Error("main: server returned an error",zap.Error(err))
+		logger.Error("main: server returned an error", zap.Error(err))
 	}
 }

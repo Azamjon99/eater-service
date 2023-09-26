@@ -3,9 +3,9 @@ package wallet
 import (
 	"context"
 
-	"eater-service/src/domain/wallet/models"
-	"eater-service/src/domain/wallet/repositories"
-	"eater-service/src/infrastructure/repositories/utils"
+	"github.com/Azamjon99/eater-service/src/domain/wallet/models"
+	"github.com/Azamjon99/eater-service/src/domain/wallet/repositories"
+	"github.com/Azamjon99/eater-service/src/infrastructure/repositories/utils"
 	"gorm.io/gorm"
 )
 
@@ -22,8 +22,6 @@ func NewRepository(db *gorm.DB) repositories.WalletRepository {
 		db: db,
 	}
 }
-
-
 
 func (r *walletRepoImpl) AddCard(ctx context.Context, wallet *models.PaymentCard) error {
 	result := r.db.WithContext(ctx).Table(tablePaymentCard).Create(wallet)

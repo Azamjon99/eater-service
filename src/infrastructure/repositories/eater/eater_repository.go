@@ -3,8 +3,8 @@ package eater
 import (
 	"context"
 
-	"eater-service/src/domain/eater/models"
-	"eater-service/src/domain/eater/repositories"
+	"github.com/Azamjon99/eater-service/src/domain/eater/models"
+	"github.com/Azamjon99/eater-service/src/domain/eater/repositories"
 	"gorm.io/gorm"
 )
 

@@ -3,10 +3,11 @@ package service
 import (
 	"context"
 	"fmt"
-	"eater-service/src/application/dtos"
-	addresssvc "eater-service/src/domain/address/services"
-	pb "eater-service/src/application/protos/address"
 
+	"github.com/Azamjon99/eater-service/src/application/dtos"
+	pb "github.com/Azamjon99/eater-service/src/application/protos/eater"
+	"github.com/Azamjon99/eater-service/src/domain/address/models"
+	addresssvc "github.com/Azamjon99/eater-service/src/domain/address/services"
 )
 
 type AddressApplicationService interface {
@@ -52,8 +53,8 @@ func (s *addressAppSvcImpl) CreateAddress(ctx context.Context, req *pb.AddAddres
 	}
 
 	return &pb.AddAddressResponse{
-		Address: address,
-	}, nil
+		Address: dtos.NewGetAddressResponse(address),
+	},nil
 }
 
 func (s *addressAppSvcImpl) UpdateAddress(ctx context.Context, req *pb.UpdateAddressRequest) (*pb.UpdateAddressResponse, error) {
@@ -78,9 +79,10 @@ func (s *addressAppSvcImpl) UpdateAddress(ctx context.Context, req *pb.UpdateAdd
 		return nil, err
 	}
 
+
 	return &pb.UpdateAddressResponse{
-		Address: address,
-	}, nil
+		Address: dtos.NewGetAddressResponse(address),
+	},nil
 }
 
 func (s *addressAppSvcImpl) DeleteAddress(ctx context.Context, req *pb.DeleteAddressRequest) (*pb.DeleteAddressResponse, error) {
@@ -100,15 +102,20 @@ func (s *addressAppSvcImpl) GetAddressById(ctx context.Context, req *pb.GetAddre
 	if req.AddressId == "" {
 		return nil, fmt.Errorf("Invalid or missing address_id: %s", req.AddressId)
 	}
+	var address *models.Address
 
 	address, err := s.addressSvc.GetAddressById(ctx, req.AddressId)
 	if err != nil {
 		return nil, err
 	}
 
+
+
+
+	
 	return &pb.GetAddressResponse{
-		Address: address,
-	}, nil
+		Address: dtos.NewGetAddressResponse(address),
+	},nil
 }
 
 func (s *addressAppSvcImpl) ListAddressByEaterId(ctx context.Context, req *pb.ListAddressByEaterRequest) (*pb.ListAddressByEaterResponse, error) {
@@ -121,7 +128,9 @@ func (s *addressAppSvcImpl) ListAddressByEaterId(ctx context.Context, req *pb.Li
 		return nil, err
 	}
 
+	
+
 	return &pb.ListAddressByEaterResponse{
-		Addresses: addresses,
-	}, nil
+		Address: address,
+	}, 
 }

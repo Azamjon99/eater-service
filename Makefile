@@ -33,11 +33,7 @@ gen-eater:
 docker: bin-lunix
 	docker build --rm -t eater-svc -f ${PWD}/deploy/Dockerfile .
 
-compose-up:
-	docker-compose -f ./deploy/docker-compose.yml up
 
-compose-down:
-	docker-compose -f ./deploy/docker-compose.yml down
 
 
 

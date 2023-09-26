@@ -3,9 +3,9 @@ package rating
 import (
 	"context"
 
-	"eater-service/src/domain/rating/models"
-	"eater-service/src/domain/rating/repositories"
-	"eater-service/src/infrastructure/repositories/utils"
+	"github.com/Azamjon99/eater-service/src/domain/rating/models"
+	"github.com/Azamjon99/eater-service/src/domain/rating/repositories"
+	"github.com/Azamjon99/eater-service/src/infrastructure/repositories/utils"
 	"gorm.io/gorm"
 )
 
@@ -23,8 +23,6 @@ func NewRepository(db *gorm.DB) repositories.RatingRepository {
 		db: db,
 	}
 }
-
-
 
 func (r *ratingRepoImpl) RateRestaurant(ctx context.Context, restaurantRatings *models.RestaurantRating) error {
 	result := r.db.WithContext(ctx).Table(tableRestaurantRating).Create(restaurantRatings)

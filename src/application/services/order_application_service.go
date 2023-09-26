@@ -2,18 +2,16 @@ package service
 
 import (
 	"context"
-	"fmt"
-	"eater-service/src/application/dtos"
-	ordersvc "eater-service/src/domain/order/services"
-	pb "eater-service/src/application/protos/address"
 
+	pb "github.com/Azamjon99/eater-service/src/application/protos/eater"
+	ordersvc "github.com/Azamjon99/eater-service/src/domain/order/services"
 )
 
 type OrderApplicationService interface {
 	CreateOrder(ctx context.Context, request *pb.PlaceOrderRequest) (*pb.PlaceOrderResponse, error)
 	UpdateOrder(ctx context.Context, request *pb.UpdateOrderRequest) (*pb.UpdateOrderResponse, error)
-	UpdateOrderByStatus(ctx context.Context, request *pb.UpdateOrderByStatusRequest) (*pb.UpdateOrderResponse, error)
-	UpdateOrderPaymentByStatus(ctx context.Context, request *pb.UpdateOrderPaymentByStatusRequest) (*pb.UpdateOrderResponse, error)
+	UpdateOrderByStatus(ctx context.Context, request *pb.UpdateOrderRequest) (*pb.UpdateOrderResponse, error)
+	UpdateOrderPaymentByStatus(ctx context.Context, request *pb.UpdateOrderRequest) (*pb.UpdateOrderResponse, error)
 	DeleteOrder(ctx context.Context, request *pb.DeleteOrderRequest) (*pb.DeleteOrderResponse, error)
 	GetOrderById(ctx context.Context, request *pb.GetOrderRequest) (*pb.GetOrderResponse, error)
 	ListOrderByEaterId(ctx context.Context, request *pb.ListOrderByEaterRequest) (*pb.ListOrderByEaterResponse, error)
@@ -21,7 +19,7 @@ type OrderApplicationService interface {
 
 type orderAppSvcImpl struct {
 	orderSvc ordersvc.OrderService
-} 
+}
 
 func NewOrderApplicationService(orderSvc ordersvc.OrderService) OrderApplicationService {
 	return &orderAppSvcImpl{

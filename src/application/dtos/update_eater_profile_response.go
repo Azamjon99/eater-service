@@ -1,8 +1,6 @@
 package dtos
 
-import "eater-service/src/domain/eater/models"
-
-
+import "github.com/Azamjon99/eater-service/src/domain/eater/models"
 
 type UpdateEaterProfileResponse struct {
 	Profile *models.EaterProfile `json:"profile"`

@@ -3,11 +3,11 @@ package services
 import (
 	"context"
 	"fmt"
-	"eater-service/src/domain/eater/models"
-	"eater-service/src/domain/eater/repositories"
-	"eater-service/src/infrastructure/crypto"
-	"eater-service/src/infrastructure/rand"
-	"eater-service/src/infrastructure/sms"
+	"github.com/Azamjon99/eater-service/src/domain/eater/models"
+	"github.com/Azamjon99/eater-service/src/domain/eater/repositories"
+	"github.com/Azamjon99/eater-service/src/infrastructure/crypto"
+	"github.com/Azamjon99/eater-service/src/infrastructure/rand"
+	"github.com/Azamjon99/eater-service/src/infrastructure/sms"
 	"go.uber.org/zap"
 	"time"
 )

@@ -3,9 +3,9 @@ package order
 import (
 	"context"
 
-	"eater-service/src/domain/order/models"
-	"eater-service/src/domain/order/repositories"
-	"eater-service/src/infrastructure/repositories/utils"
+	"github.com/Azamjon99/eater-service/src/domain/order/models"
+	"github.com/Azamjon99/eater-service/src/domain/order/repositories"
+	"github.com/Azamjon99/eater-service/src/infrastructure/repositories/utils"
 	"gorm.io/gorm"
 )
 

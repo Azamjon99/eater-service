@@ -3,9 +3,9 @@ package address
 import (
 	"context"
 
-	"eater-service/src/domain/address/models"
-	"eater-service/src/domain/address/repositories"
-	"eater-service/src/infrastructure/repositories/utils"
+	"github.com/Azamjon99/eater-service/src/domain/address/models"
+	"github.com/Azamjon99/eater-service/src/domain/address/repositories"
+	"github.com/Azamjon99/eater-service/src/infrastructure/repositories/utils"
 	"gorm.io/gorm"
 )
 
@@ -22,8 +22,6 @@ func NewRepository(db *gorm.DB) repositories.AddressRepository {
 		db: db,
 	}
 }
-
-
 
 func (r *addressRepoImpl) CreateAddress(ctx context.Context, address *models.Address) error {
 	result := r.db.WithContext(ctx).Table(tableAddress).Create(address)

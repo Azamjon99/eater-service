@@ -2,10 +2,9 @@ package service
 
 import (
 	"context"
-	"fmt"
-	"eater-service/src/application/dtos"
-	walletsvc "eater-service/src/domain/wallet/services"
-	pb "eater-service/src/protos/wallet" // Import your generated Protobuf package
+
+	walletsvc "github.com/Azamjon99/eater-service/src/domain/wallet/services"
+	pb "github.com/Azamjon99/eater-service/src/protos/eater"
 )
 
 type WalletApplicationService interface {

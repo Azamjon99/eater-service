@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"context"
-	"eater-service/src/domain/address/models"
+	"github.com/Azamjon99/eater-service/src/domain/address/models"
 )
 
 type AddressRepository interface {

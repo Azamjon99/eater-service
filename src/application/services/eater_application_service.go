@@ -2,15 +2,16 @@ package service
 
 import (
 	"context"
-	"eater-service/src/application/dtos"
-	pb "eater-service/src/application/protos/eater"
-	eatersvc "eater-service/src/domain/eater/services"
-	"eater-service/src/infrastructure/jwt"
-	"eater-service/src/infrastructure/validator"
 	"errors"
 	"fmt"
+
+	"github.com/Azamjon99/eater-service/src/application/dtos"
+	pb "github.com/Azamjon99/eater-service/src/application/protos/eater"
+	eatersvc "github.com/Azamjon99/eater-service/src/domain/eater/services"
+	"github.com/Azamjon99/eater-service/src/infrastructure/jwt"
+	"github.com/Azamjon99/eater-service/src/infrastructure/validator"
 )
- 
+
 type EaterApplicationService interface {
 	SignupEater(ctx context.Context, req *pb.SignupEaterRequest) (*pb.SignupEaterResponse, error)
 	ConfirmSMSCode(ctx context.Context, req *pb.ConfirmSmsCodeRequest) (*pb.ConfirmSmsCodeResponse, error)
@@ -95,7 +96,6 @@ func (s *eaterAppSvcImpl) UpdateEaterProfile(ctx context.Context, req *pb.Update
 
 	return &pb.UpdateEaterProfileResponse{
 		Profile: dtos.EaterProfileResponse(profile),
-
 	}, nil
 }
 
@@ -112,6 +112,5 @@ func (s *eaterAppSvcImpl) GetEaterProfile(ctx context.Context, req *pb.GetEaterP
 
 	return &pb.GetEaterProfileResponse{
 		Profile: dtos.EaterProfileResponse(profile),
-
 	}, nil
 }

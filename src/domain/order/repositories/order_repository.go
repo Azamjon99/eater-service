@@ -3,7 +3,7 @@ package repositories
 import (
 	"context"
 
-	"eater-service/src/domain/order/models"
+	"github.com/Azamjon99/eater-service/src/domain/order/models"
 )
 
 type OrderRepository interface {

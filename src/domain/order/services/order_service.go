@@ -2,9 +2,9 @@ package services
 
 import (
 	"context"
-	"eater-service/src/domain/order/models"
-	"eater-service/src/domain/order/repositories"
-	"eater-service/src/infrastructure/rand"
+	"github.com/Azamjon99/eater-service/src/domain/order/models"
+	"github.com/Azamjon99/eater-service/src/domain/order/repositories"
+	"github.com/Azamjon99/eater-service/src/infrastructure/rand"
 	"time"
 )
 

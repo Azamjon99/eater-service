@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"context"
-	"eater-service/src/domain/wallet/models"
+	"github.com/Azamjon99/eater-service/src/domain/wallet/models"
 )
 
 type WalletRepository interface {

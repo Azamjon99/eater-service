@@ -1,8 +1,6 @@
 package dtos
 
-import "eater-service/src/domain/rating/models"
-
-
+import "github.com/Azamjon99/eater-service/src/domain/rating/models"
 
 type ListRestaurantRatingResponse struct {
 	RestaurantRating []*models.RestaurantRating `json:"restaurant_rating"`

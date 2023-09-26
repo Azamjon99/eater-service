@@ -5,21 +5,23 @@ import (
 	"fmt"
 	"eater-service/src/application/dtos"
 	ordersvc "eater-service/src/domain/order/services"
+	pb "eater-service/src/application/protos/address"
+
 )
 
 type OrderApplicationService interface {
-	CreateOrder(ctx context.Context, eaterId string, instruction string, restaurantID string) (*dtos.GetOrderResponse, error)
-	UpdateOrder(ctx context.Context, orderId string, instruction string, restaurantID string) (*dtos.GetOrderResponse, error)
-	UpdateOrderByStatus(ctx context.Context, orderId string, status string) (*dtos.GetOrderResponse, error)
-	UpdateOrderPaymentByStatus(ctx context.Context, orderId string, paymentStatus string) (*dtos.GetOrderResponse, error)
-	DeleteOrder(ctx context.Context, orderId string) (*dtos.GetOrderResponse, error)
-	GetOrderById(ctx context.Context, orderId string) (*dtos.GetOrderResponse, error)
-	ListOrderByEaterId(ctx context.Context, eaterID string, sort string, page, pageSize int) (*dtos.ListOrderResponse, error)
+	CreateOrder(ctx context.Context, request *pb.PlaceOrderRequest) (*pb.PlaceOrderResponse, error)
+	UpdateOrder(ctx context.Context, request *pb.UpdateOrderRequest) (*pb.UpdateOrderResponse, error)
+	UpdateOrderByStatus(ctx context.Context, request *pb.UpdateOrderByStatusRequest) (*pb.UpdateOrderResponse, error)
+	UpdateOrderPaymentByStatus(ctx context.Context, request *pb.UpdateOrderPaymentByStatusRequest) (*pb.UpdateOrderResponse, error)
+	DeleteOrder(ctx context.Context, request *pb.DeleteOrderRequest) (*pb.DeleteOrderResponse, error)
+	GetOrderById(ctx context.Context, request *pb.GetOrderRequest) (*pb.GetOrderResponse, error)
+	ListOrderByEaterId(ctx context.Context, request *pb.ListOrderByEaterRequest) (*pb.ListOrderByEaterResponse, error)
 }
 
 type orderAppSvcImpl struct {
 	orderSvc ordersvc.OrderService
-}
+} 
 
 func NewOrderApplicationService(orderSvc ordersvc.OrderService) OrderApplicationService {
 	return &orderAppSvcImpl{
@@ -27,114 +29,65 @@ func NewOrderApplicationService(orderSvc ordersvc.OrderService) OrderApplication
 	}
 }
 
-func (s *orderAppSvcImpl) CreateOrder(ctx context.Context, eaterId string, instruction string, restaurantID string) (*dtos.GetOrderResponse, error) {
-
-	if eaterId == "" {
-		return nil, fmt.Errorf("Invalid or missing eater_id: %s", eaterId)
-	}
-	if instruction == "" {
-		return nil, fmt.Errorf("Invalid or missing instruction: %s", instruction)
-	}
-	if restaurantID == "" {
-		return nil, fmt.Errorf("Invalid or missing restaurantID: %s", restaurantID)
-	}
-
-	order, err := s.orderSvc.CreateOrder(ctx, eaterId, instruction, restaurantID)
+func (s *orderAppSvcImpl) CreateOrder(ctx context.Context, request *pb.PlaceOrderRequest) (*pb.PlaceOrderResponse, error) {
+	order, err := s.orderSvc.CreateOrder(ctx, request.EaterId, request.Cart)
 	if err != nil {
 		return nil, err
 	}
 
-	return dtos.NewGetOrderResponse(order), nil
+	return &pb.PlaceOrderResponse{Order: order}, nil
 }
 
-func (s *orderAppSvcImpl) UpdateOrder(ctx context.Context, orderId string, instruction string, restaurantID string) (*dtos.GetOrderResponse, error) {
-	if orderId == "" {
-		return nil, fmt.Errorf("Invalid or missing orderId: %s", orderId)
-	}
-	if instruction == "" {
-		return nil, fmt.Errorf("Invalid or missing instruction: %s", instruction)
-	}
-	if restaurantID == "" {
-		return nil, fmt.Errorf("Invalid or missing restaurantID: %s", restaurantID)
-	}
-
-	order, err := s.orderSvc.UpdateOrder(ctx, orderId, instruction, restaurantID)
+func (s *orderAppSvcImpl) UpdateOrder(ctx context.Context, request *pb.UpdateOrderRequest) (*pb.UpdateOrderResponse, error) {
+	order, err := s.orderSvc.UpdateOrder(ctx, request.Order)
 	if err != nil {
 		return nil, err
 	}
 
-	return dtos.NewGetOrderResponse(order), nil
+	return &pb.UpdateOrderResponse{Order: order}, nil
 }
 
-func (s *orderAppSvcImpl) UpdateOrderByStatus(ctx context.Context, orderId string, status string) (*dtos.GetOrderResponse, error) {
-	if orderId == "" {
-		return nil, fmt.Errorf("Invalid or missing orderId: %s", orderId)
-	}
-	if status == "" {
-		return nil, fmt.Errorf("Invalid or missing status: %s", status)
-	}
-
-	order, err := s.orderSvc.UpdateOrderByStatus(ctx, orderId, status)
+func (s *orderAppSvcImpl) UpdateOrderByStatus(ctx context.Context, request *pb.UpdateOrderByStatusRequest) (*pb.UpdateOrderResponse, error) {
+	order, err := s.orderSvc.UpdateOrderByStatus(ctx, request.Order)
 	if err != nil {
 		return nil, err
 	}
 
-	return dtos.NewGetOrderResponse(order), nil
+	return &pb.UpdateOrderResponse{Order: order}, nil
 }
 
-func (s *orderAppSvcImpl) UpdateOrderPaymentByStatus(ctx context.Context, orderId string, paymentStatus string) (*dtos.GetOrderResponse, error) {
-	if orderId == "" {
-		return nil, fmt.Errorf("Invalid or missing orderId: %s", orderId)
-	}
-	if paymentStatus == "" {
-		return nil, fmt.Errorf("Invalid or missing paymentStatus: %s", paymentStatus)
-	}
-
-	order, err := s.orderSvc.UpdateOrderPaymentByStatus(ctx, orderId, paymentStatus)
+func (s *orderAppSvcImpl) UpdateOrderPaymentByStatus(ctx context.Context, request *pb.UpdateOrderPaymentByStatusRequest) (*pb.UpdateOrderResponse, error) {
+	order, err := s.orderSvc.UpdateOrderPaymentByStatus(ctx, request.Order)
 	if err != nil {
 		return nil, err
 	}
 
-	return dtos.NewGetOrderResponse(order), nil
+	return &pb.UpdateOrderResponse{Order: order}, nil
 }
 
-func (s *orderAppSvcImpl) DeleteOrder(ctx context.Context, orderId string) (*dtos.GetOrderResponse, error) {
-	if orderId == "" {
-		return nil, fmt.Errorf("Invalid or missing orderId: %s", orderId)
-	}
-
-	order, err := s.orderSvc.DeleteOrder(ctx, orderId)
+func (s *orderAppSvcImpl) DeleteOrder(ctx context.Context, request *pb.DeleteOrderRequest) (*pb.DeleteOrderResponse, error) {
+	_, err := s.orderSvc.DeleteOrder(ctx, request.OrderId)
 	if err != nil {
 		return nil, err
 	}
 
-	return dtos.NewGetOrderResponse(order), nil
+	return &pb.DeleteOrderResponse{}, nil
 }
 
-func (s *orderAppSvcImpl) GetOrderById(ctx context.Context, orderId string) (*dtos.GetOrderResponse, error) {
-
-	if orderId == "" {
-		return nil, fmt.Errorf("Invalid or missing orderId: %s", orderId)
-	}
-
-	order, err := s.orderSvc.GetOrderById(ctx, orderId)
+func (s *orderAppSvcImpl) GetOrderById(ctx context.Context, request *pb.GetOrderRequest) (*pb.GetOrderResponse, error) {
+	order, err := s.orderSvc.GetOrderById(ctx, request.OrderId)
 	if err != nil {
 		return nil, err
 	}
 
-	return dtos.NewGetOrderResponse(order), nil
+	return &pb.GetOrderResponse{Order: order}, nil
 }
 
-func (s *orderAppSvcImpl) ListOrderByEaterId(ctx context.Context, eaterID string, sort string, page, pageSize int) (*dtos.ListOrderResponse, error) {
-
-	if eaterID == "" {
-		return nil, fmt.Errorf("Invalid or missing eaterID: %s", eaterID)
-	}
-
-	order, err := s.orderSvc.ListOrderByEaterId(ctx, eaterID, sort, page, pageSize)
+func (s *orderAppSvcImpl) ListOrderByEaterId(ctx context.Context, request *pb.ListOrderByEaterRequest) (*pb.ListOrderByEaterResponse, error) {
+	orders, err := s.orderSvc.ListOrderByEaterId(ctx, request.EaterId, request.Sort, int(request.Page), int(request.PageSize))
 	if err != nil {
 		return nil, err
 	}
 
-	return dtos.NewListOrderResponse(order), nil
+	return &pb.ListOrderByEaterResponse{Orders: orders}, nil
 }

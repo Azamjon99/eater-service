@@ -5,86 +5,88 @@ import (
 	"fmt"
 	"eater-service/src/application/dtos"
 	walletsvc "eater-service/src/domain/wallet/services"
+	pb "eater-service/src/protos/wallet" // Import your generated Protobuf package
 )
 
 type WalletApplicationService interface {
-	AddCard(ctx context.Context, eaterId, number, cardToken, restaurant string) (*dtos.GetPaymentCardResponse, error)
-	DeleteCard(ctx context.Context, cardId string) (*dtos.GetPaymentCardResponse, error)
-	GetCard(ctx context.Context, cardId string) (*dtos.GetPaymentCardResponse, error)
-	ListCardByEaterId(ctx context.Context, eaterID string, sort string, page, pageSize int) (*dtos.ListPaymentCardResponse, error)
+	AddCard(ctx context.Context, request *pb.AddPaymentCardRequest) (*pb.AddPaymentCardResponse, error)
+	DeleteCard(ctx context.Context, request *pb.DeletePaymentCardRequest) (*pb.DeletePaymentCardResponse, error)
+	GetCard(ctx context.Context, request *pb.GetPaymentCardRequest) (*pb.GetPaymentCardResponse, error)
+	ListCardByEaterId(ctx context.Context, request *pb.ListPaymentCardByEaterRequest) (*pb.ListPaymentCardByEaterResponse, error)
 }
 
 type walletAppSvcImpl struct {
 	walletSvc walletsvc.WalletService
 }
 
-func NewWalletApplicationService(walletSvc walletsvc.WalletService) *walletAppSvcImpl {
+func NewWalletApplicationService(walletSvc walletsvc.WalletService) WalletApplicationService {
 	return &walletAppSvcImpl{
 		walletSvc: walletSvc,
 	}
 }
 
-func (s *walletAppSvcImpl) AddCard(ctx context.Context, eaterId, number, cardToken, restaurant string) (*dtos.GetPaymentCardResponse, error) {
+func (s *walletAppSvcImpl) AddCard(ctx context.Context, request *pb.AddPaymentCardRequest) (*pb.AddPaymentCardResponse, error) {
 
-	if eaterId == "" {
-		return nil, fmt.Errorf("invalid or missing eaterId: %s", eaterId)
-	}
-	if cardToken == "" {
-		return nil, fmt.Errorf("Invalid or missing cardToken: %s", cardToken)
-	}
-	if number == "" {
-		return nil, fmt.Errorf("Invalid or missing number: %s", number)
-	}
-
-	if restaurant == "" {
-		return nil, fmt.Errorf("Invalid or missing restaurant: %s", restaurant)
-	}
-	paymentCard, err := s.walletSvc.AddCard(ctx, eaterId, number, cardToken, restaurant)
+	paymentCard, err := s.walletSvc.AddCard(ctx, request.EaterId, request.CardNumber, request.CardToken)
 	if err != nil {
 		return nil, err
 	}
 
-	return dtos.NewGetPaymentCardResponse(paymentCard), nil
+	return &pb.AddPaymentCardResponse{
+		Card: &pb.PaymentCardView{
+			Id:          paymentCard.ID,
+			EaterId:     paymentCard.EaterID,
+			Number:      paymentCard.Number,
+			CreatedAt:   paymentCard.CreatedAt,
+		},
+	}, nil
 }
 
-func (s *walletAppSvcImpl) DeleteCard(ctx context.Context, cardId string) (*dtos.GetPaymentCardResponse, error) {
+func (s *walletAppSvcImpl) DeleteCard(ctx context.Context, request *pb.DeletePaymentCardRequest) (*pb.DeletePaymentCardResponse, error) {
 
-	if cardId == "" {
-		return nil, fmt.Errorf("Invalid or missing cardId: %s", cardId)
-	}
-
-	paymentCard, err := s.walletSvc.DeleteCard(ctx, cardId)
+	_, err := s.walletSvc.DeleteCard(ctx, request.CardId)
 	if err != nil {
 		return nil, err
 	}
 
-	return dtos.NewGetPaymentCardResponse(paymentCard), nil
+	return &pb.DeletePaymentCardResponse{}, nil
 }
 
-func (s *walletAppSvcImpl) GetCard(ctx context.Context, cardId string) (*dtos.GetPaymentCardResponse, error) {
+func (s *walletAppSvcImpl) GetCard(ctx context.Context, request *pb.GetPaymentCardRequest) (*pb.GetPaymentCardResponse, error) {
 
-	if cardId == "" {
-		return nil, fmt.Errorf("Invalid or missing cardId: %s", cardId)
-	}
-
-	paymentCard, err := s.walletSvc.GetCard(ctx, cardId)
+	paymentCard, err := s.walletSvc.GetCard(ctx, request.CardId)
 	if err != nil {
 		return nil, err
 	}
 
-	return dtos.NewGetPaymentCardResponse(paymentCard), nil
+	return &pb.GetPaymentCardResponse{
+		Card: &pb.PaymentCardView{
+			Id:          paymentCard.ID,
+			EaterId:     paymentCard.EaterID,
+			Number:      paymentCard.Number,
+			CreatedAt:   paymentCard.CreatedAt,
+		},
+	}, nil
 }
 
-func (s *walletAppSvcImpl) ListCardByEaterId(ctx context.Context, eaterID string, sort string, page, pageSize int) (*dtos.ListPaymentCardResponse, error) {
+func (s *walletAppSvcImpl) ListCardByEaterId(ctx context.Context, request *pb.ListPaymentCardByEaterRequest) (*pb.ListPaymentCardByEaterResponse, error) {
 
-	if eaterID == "" {
-		return nil, fmt.Errorf("Invalid or missing eaterID: %s", eaterID)
-	}
-
-	paymentCard, err := s.walletSvc.ListCardByEaterId(ctx, eaterID, sort, page, pageSize)
+	paymentCards, err := s.walletSvc.ListCardByEaterId(ctx, request.EaterId)
 	if err != nil {
 		return nil, err
 	}
 
-	return dtos.NewListPaymentCardResponse(paymentCard), nil
+	var cardViews []*pb.PaymentCardView
+	for _, paymentCard := range paymentCards {
+		cardViews = append(cardViews, &pb.PaymentCardView{
+			Id:          paymentCard.ID,
+			EaterId:     paymentCard.EaterID,
+			Number:      paymentCard.Number,
+			CreatedAt:   paymentCard.CreatedAt,
+		})
+	}
+
+	return &pb.ListPaymentCardByEaterResponse{
+		Cards: cardViews,
+	}, nil
 }

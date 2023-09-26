@@ -9,13 +9,13 @@ import (
 )
 
 type RatingService interface {
-	RateRestaurant(ctx context.Context, eaterID string, restaurantID string, rating int, comment string) (*models.RestaurantRating, error)
-	UpdateRestaurantRating(ctx context.Context, restaurantRatingId string, rating int, comment string) (*models.RestaurantRating, error)
+	RateRestaurant(ctx context.Context, eaterID string, restaurantID string, rating int32, comment string) (*models.RestaurantRating, error)
+	UpdateRestaurantRating(ctx context.Context, restaurantRatingId string, rating int32, comment string) (*models.RestaurantRating, error)
 	ListRestaurantRatingEaterId(ctx context.Context, eaterID string, sort string, page, pageSize int) ([]*models.RestaurantRating, error)
-	RateDelivery(ctx context.Context, eaterID string, orderId string, rating int, comment string) (*models.DeliveryRating, error)
-	UpdateDeliveryRating(ctx context.Context, deliveryRatingId string, rating int, comment string) (*models.DeliveryRating, error)
+	RateDelivery(ctx context.Context, eaterID string, orderId string, rating int32, comment string) (*models.DeliveryRating, error)
+	UpdateDeliveryRating(ctx context.Context, deliveryRatingId string, rating int32, comment string) (*models.DeliveryRating, error)
 	GetDeliveryRatingByOrderId(ctx context.Context, orderId string) (*models.DeliveryRating, error)
-	ListDeliveryRatingByEaterId(ctx context.Context, eaterID string, sort string, page, pageSize int) ([]*models.DeliveryRating, error)
+	ListDeliveryRatingByEaterId(ctx context.Context, eaterID string) ([]*models.DeliveryRating, error)
 }
 type ratingSvcImpl struct {
 	ratingRepo repositories.RatingRepository
@@ -27,7 +27,7 @@ func NewWalletService(ratingRepo repositories.RatingRepository) RatingService {
 	}
 }
 
-func (s *ratingSvcImpl) RateRestaurant(ctx context.Context, eaterID string, restaurantID string, rating int, comment string) (*models.RestaurantRating, error) {
+func (s *ratingSvcImpl) RateRestaurant(ctx context.Context, eaterID string, restaurantID string, rating int32, comment string) (*models.RestaurantRating, error) {
 
 	restaurantRating := &models.RestaurantRating{
 		ID:           rand.UUID(),
@@ -48,7 +48,7 @@ func (s *ratingSvcImpl) RateRestaurant(ctx context.Context, eaterID string, rest
 
 }
 
-func (s *ratingSvcImpl) UpdateRestaurantRating(ctx context.Context, restaurantRatingId string, rating int, comment string) (*models.RestaurantRating, error) {
+func (s *ratingSvcImpl) UpdateRestaurantRating(ctx context.Context, restaurantRatingId string, rating int32, comment string) (*models.RestaurantRating, error) {
 
 	restaurantRating := &models.RestaurantRating{
 		ID:        restaurantRatingId,
@@ -76,7 +76,7 @@ func (s *ratingSvcImpl) ListRestaurantRatingEaterId(ctx context.Context, eaterID
 	return restaurantRatings, nil
 }
 
-func (s *ratingSvcImpl) RateDelivery(ctx context.Context, eaterID string, orderId string, rating int, comment string) (*models.DeliveryRating, error) {
+func (s *ratingSvcImpl) RateDelivery(ctx context.Context, eaterID string, orderId string, rating int32, comment string) (*models.DeliveryRating, error) {
 
 	deliveryRating := &models.DeliveryRating{
 		ID:        rand.UUID(),
@@ -97,7 +97,7 @@ func (s *ratingSvcImpl) RateDelivery(ctx context.Context, eaterID string, orderI
 
 }
 
-func (s *ratingSvcImpl) UpdateDeliveryRating(ctx context.Context, deliveryRatingId string, rating int, comment string) (*models.DeliveryRating, error) {
+func (s *ratingSvcImpl) UpdateDeliveryRating(ctx context.Context, deliveryRatingId string, rating int32, comment string) (*models.DeliveryRating, error) {
 
 	deliveryRating := &models.DeliveryRating{
 		ID:        deliveryRatingId,

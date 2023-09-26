@@ -12,7 +12,6 @@ import (
 type RatingApplicationService interface {
 	RateRestaurant(ctx context.Context, request *pb.RateRestaurantRequest) (*pb.RateRestaurantResponse, error)
 	UpdateRestaurantRating(ctx context.Context, request *pb.UpdateRestaurantRatingRequest) (*pb.UpdateRestaurantRatingResponse, error)
-	ListRestaurantRatingByEaterId(ctx context.Context, request *pb.ListRestaurantRatingByEaterRequest) (*pb.ListRestaurantRatingByEaterResponse, error)
 	RateDelivery(ctx context.Context, request *pb.RateDeliveryRequest) (*pb.RateDeliveryResponse, error)
 	UpdateDeliveryRating(ctx context.Context, request *pb.UpdateDeliveryRatingRequest) (*pb.UpdateDeliveryRatingResponse, error)
 	ListDeliveryRatingByEaterId(ctx context.Context, request *pb.ListDeliveryRatingByEaterRequest) (*pb.ListDeliveryRatingByEaterResponse, error)
@@ -113,21 +112,20 @@ func (s *ratingAppSvcImpl) UpdateDeliveryRating(ctx context.Context, request *pb
 }
 
 func (s *ratingAppSvcImpl) ListDeliveryRatingByEaterId(ctx context.Context, request *pb.ListDeliveryRatingByEaterRequest) (*pb.ListDeliveryRatingByEaterResponse, error) {
-	deliveryRatings, err := s.ratingSvc.ListDeliveryRatingByEaterId(ctx, request.EaterId)
-	if err != nil {
-		return nil, err
-	}
+    deliveryRatings, err := s.ratingSvc.ListDeliveryRatingByEaterId(
+        ctx,
+        request.EaterId,
+        request.Sort,
+        int(request.Page),
+        int(request.PageSize),
+    )
+    if err != nil {
+        return nil, err
+    }
 
-	pbRestaurantRating := &pb.ListRestaurantRatingByEaterResponse{
-		ratings:           deliveryRatings.EaterID,
-
-	}
-
-	response := &pb.UpdateDeliveryRatingResponse{
-		Rating: pbRestaurantRating,
-	}
-
-	return response, nil
+	return &pb.ListDeliveryRatingByEaterResponse{
+		Ratings: dtos.ToDeliveryRatingsPB(deliveryRatings),
+	},nil
 }
 
 func (s *ratingAppSvcImpl) GetDeliveryRatingByOrder(ctx context.Context, request *pb.GetDeliveryRatingByOrderRequest) (*pb.GetDeliveryRatingByOrderResponse, error) {
@@ -136,8 +134,9 @@ func (s *ratingAppSvcImpl) GetDeliveryRatingByOrder(ctx context.Context, request
 		return nil, err
 	}
 
-	return &pb.GetDeliveryRatingByOrderResponse{Rating: deliveryRating}, nil
-}
+	return &pb.GetDeliveryRatingByOrderResponse{
+		Rating: dtos.ToDeliveryRatingPB(deliveryRating),
+	},nil}
 
 
 

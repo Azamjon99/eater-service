@@ -15,7 +15,7 @@ type RatingService interface {
 	RateDelivery(ctx context.Context, eaterID string, orderId string, rating int32, comment string) (*models.DeliveryRating, error)
 	UpdateDeliveryRating(ctx context.Context, deliveryRatingId string, rating int32, comment string) (*models.DeliveryRating, error)
 	GetDeliveryRatingByOrderId(ctx context.Context, orderId string) (*models.DeliveryRating, error)
-	ListDeliveryRatingByEaterId(ctx context.Context, eaterID string) ([]*models.DeliveryRating, error)
+	ListDeliveryRatingByEaterId(ctx context.Context, eaterID string, sort string, page, pageSize int) ([]*models.DeliveryRating, error)
 }
 type ratingSvcImpl struct {
 	ratingRepo repositories.RatingRepository

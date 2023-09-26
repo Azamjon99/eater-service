@@ -8,15 +8,19 @@ import (
 type Server struct{
 	eaterApp service.EaterApplicationService
 	addressApp service.AddressApplicationService
+	restaurantRatingApp service.RatingApplicationService
 }
 
 
 func NewServer(
 	eaterApp service.EaterApplicationService,
 	addressApp service.AddressApplicationService,
+	restaurantRatingApp service.RatingApplicationService,
 ) *Server{
 	return &Server{
 		eaterApp: eaterApp,
+		addressApp: addressApp,
+		restaurantRatingApp: restaurantRatingApp,
 	
 	}
 }
@@ -35,7 +39,7 @@ func (s *Server) GetEaterProfile(ctx context.Context, r *pb.GetEaterProfileReque
 	return s.eaterApp.GetEaterProfile(ctx,r)
 }
 
-func (s *Server) CreateAddress(ctx context.Context, r *pb.AddAddressRequest)(*pb.AddAddressResponse, error){
+func (s *Server) AddAddress(ctx context.Context, r *pb.AddAddressRequest)(*pb.AddAddressResponse, error){
 	return s.addressApp.CreateAddress(ctx,r)
 }
 
@@ -49,4 +53,16 @@ func (s *Server) DeleteAddress(ctx context.Context, r *pb.GetAddressRequest)(*pb
 
 func (s *Server) ListAddressByEaterId(ctx context.Context, r *pb.DeleteAddressRequest)(*pb.DeleteAddressResponse, error){
 	return s.addressApp.ListAddressByEaterId(ctx,r)
+}
+
+func (s *Server) RateRestaurant(ctx context.Context, r *pb.RateRestaurantRequest)(*pb.RateRestaurantResponse,error){
+	return s.restaurantRatingApp.RateRestaurant(ctx,r)
+}
+
+func (s *Server) UpdateRestaurantRating(ctx context.Context, r *pb.UpdateRestaurantRatingRequest)(*pb.UpdateRestaurantRatingResponse,error){
+	return s.restaurantRatingApp.UpdateRestaurantRating(ctx,r)
+}
+
+func (s *Server) ListRestaurantRatingByEater(ctx context.Context, r *pb.ListRestaurantRatingByEaterRequest)(*pb.ListRestaurantRatingByEaterResponse,error){
+	return s.restaurantRatingApp.ListRestaurantRatingByEaterId(ctx,r)
 }

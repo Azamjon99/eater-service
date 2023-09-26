@@ -11,7 +11,6 @@ func EaterProfileResponse(profile *models.EaterProfile) *pb.EaterProfile{
 		EaterId: profile.EaterID,
 		PhoneNumber: profile.PhoneNumber,
 		Name: profile.Name,
-		IsPhoneNumberConfirmed: profile.IsPhoneNumberConfirmed,
 		CreatedAt: profile.CreatedAt.Format(time.RFC3339),
 		UpdatedAt: profile.UpdatedAt.Format(time.RFC3339),
 	}

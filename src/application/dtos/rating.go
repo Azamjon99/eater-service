@@ -28,11 +28,10 @@ func ToDeliveryRatingsPB(ratings []*models.DeliveryRating) []*pb.DeliveryRating{
 	return ratingsArr
 }
 
-func ToRestaurantRatingPB(rating *models.RestaurantRating) *pb.RestaurantRating{
+func ToRestaurantRatingPB(rating *models.DeliveryRating) *pb.RestaurantRating{
 	return &pb.RestaurantRating{
 		Id: rating.ID,
 		EaterId:rating.EaterID,
-		RestaurantId: rating.RestaurantID,
 		Rating: int32(rating.Rating),
 		Comment: rating.Comment,
 		CreatedAt: rating.CreatedAt.Format(time.RFC3339),
@@ -40,7 +39,7 @@ func ToRestaurantRatingPB(rating *models.RestaurantRating) *pb.RestaurantRating{
 	}
 }
 
-func ToRestaurantRatingsPB(ratings []*models.RestaurantRating) []*pb.RestaurantRating{
+func ToRestaurantRatingsPB(ratings []*models.DeliveryRating) []*pb.RestaurantRating{
 	ratingsArr := make([]*pb.RestaurantRating, len(ratings))
 	for i,rating := range ratings {
 		ratingsArr[i] = ToRestaurantRatingPB(rating)

@@ -12,5 +12,5 @@ type RatingRepository interface {
 	RateDelivery(ctx context.Context, deliveryRatings *models.DeliveryRating) error
 	UpdateDeliveryRating(ctx context.Context, deliveryRatings *models.DeliveryRating) error
 	GetDeliveryRatingByOrderId(ctx context.Context, orderId string) (*models.DeliveryRating, error)
-	ListDeliveryRatingByEaterId(ctx context.Context, eaterID string, sort string, page, pageSize int) ([]*models.DeliveryRating, error)
+	ListDeliveryRatingByEaterId(ctx context.Context, eaterID string) ([]*models.DeliveryRating, error)
 }

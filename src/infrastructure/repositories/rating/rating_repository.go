@@ -79,11 +79,10 @@ func (r *ratingRepoImpl) GetDeliveryRatingByOrderId(ctx context.Context, orderId
 	return deliveryRatings, nil
 }
 
-func (r *ratingRepoImpl) ListDeliveryRatingByEaterId(ctx context.Context, eaterID string, sort string, page, pageSize int) ([]*models.DeliveryRating, error) {
+func (r *ratingRepoImpl) ListDeliveryRatingByEaterId(ctx context.Context, eaterID string) ([]*models.DeliveryRating, error) {
 
 	var deliveryRatings []*models.DeliveryRating
 	result := r.db.WithContext(ctx).Table(tableDeliveryRating).Where("eater_id = ?", eaterID)
-	result.Scopes(utils.SortByCreatedAt(page, pageSize), utils.Sort(sort)).Find(&deliveryRatings)
 
 	if result.Error != nil {
 		return nil, result.Error

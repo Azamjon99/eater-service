@@ -49,8 +49,6 @@ type EaterServiceClient interface {
 	ListRestaurantRatingByEater(ctx context.Context, in *ListRestaurantRatingByEaterRequest, opts ...grpc.CallOption) (*ListRestaurantRatingByEaterResponse, error)
 	RateDelivery(ctx context.Context, in *RateDeliveryRequest, opts ...grpc.CallOption) (*RateDeliveryResponse, error)
 	UpdateDeliveryRating(ctx context.Context, in *UpdateDeliveryRatingRequest, opts ...grpc.CallOption) (*UpdateDeliveryRatingResponse, error)
-	ListDeliveryRatingByEater(ctx context.Context, in *ListDeliveryRatingByEaterRequest, opts ...grpc.CallOption) (*ListDeliveryRatingByEaterResponse, error)
-	GetDeliveryRatingByOrder(ctx context.Context, in *GetDeliveryRatingByOrderRequest, opts ...grpc.CallOption) (*GetDeliveryRatingByOrderResponse, error)
 }
 
 type eaterServiceClient struct {
@@ -268,24 +266,6 @@ func (c *eaterServiceClient) UpdateDeliveryRating(ctx context.Context, in *Updat
 	return out, nil
 }
 
-func (c *eaterServiceClient) ListDeliveryRatingByEater(ctx context.Context, in *ListDeliveryRatingByEaterRequest, opts ...grpc.CallOption) (*ListDeliveryRatingByEaterResponse, error) {
-	out := new(ListDeliveryRatingByEaterResponse)
-	err := c.cc.Invoke(ctx, "/EaterService/ListDeliveryRatingByEater", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *eaterServiceClient) GetDeliveryRatingByOrder(ctx context.Context, in *GetDeliveryRatingByOrderRequest, opts ...grpc.CallOption) (*GetDeliveryRatingByOrderResponse, error) {
-	out := new(GetDeliveryRatingByOrderResponse)
-	err := c.cc.Invoke(ctx, "/EaterService/GetDeliveryRatingByOrder", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // EaterServiceServer is the server API for EaterService service.
 // All implementations must embed UnimplementedEaterServiceServer
 // for forward compatibility
@@ -317,8 +297,6 @@ type EaterServiceServer interface {
 	ListRestaurantRatingByEater(context.Context, *ListRestaurantRatingByEaterRequest) (*ListRestaurantRatingByEaterResponse, error)
 	RateDelivery(context.Context, *RateDeliveryRequest) (*RateDeliveryResponse, error)
 	UpdateDeliveryRating(context.Context, *UpdateDeliveryRatingRequest) (*UpdateDeliveryRatingResponse, error)
-	ListDeliveryRatingByEater(context.Context, *ListDeliveryRatingByEaterRequest) (*ListDeliveryRatingByEaterResponse, error)
-	GetDeliveryRatingByOrder(context.Context, *GetDeliveryRatingByOrderRequest) (*GetDeliveryRatingByOrderResponse, error)
 	mustEmbedUnimplementedEaterServiceServer()
 }
 
@@ -394,12 +372,6 @@ func (UnimplementedEaterServiceServer) RateDelivery(context.Context, *RateDelive
 }
 func (UnimplementedEaterServiceServer) UpdateDeliveryRating(context.Context, *UpdateDeliveryRatingRequest) (*UpdateDeliveryRatingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDeliveryRating not implemented")
-}
-func (UnimplementedEaterServiceServer) ListDeliveryRatingByEater(context.Context, *ListDeliveryRatingByEaterRequest) (*ListDeliveryRatingByEaterResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListDeliveryRatingByEater not implemented")
-}
-func (UnimplementedEaterServiceServer) GetDeliveryRatingByOrder(context.Context, *GetDeliveryRatingByOrderRequest) (*GetDeliveryRatingByOrderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetDeliveryRatingByOrder not implemented")
 }
 func (UnimplementedEaterServiceServer) mustEmbedUnimplementedEaterServiceServer() {}
 
@@ -828,42 +800,6 @@ func _EaterService_UpdateDeliveryRating_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
-func _EaterService_ListDeliveryRatingByEater_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListDeliveryRatingByEaterRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(EaterServiceServer).ListDeliveryRatingByEater(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/EaterService/ListDeliveryRatingByEater",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EaterServiceServer).ListDeliveryRatingByEater(ctx, req.(*ListDeliveryRatingByEaterRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _EaterService_GetDeliveryRatingByOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetDeliveryRatingByOrderRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(EaterServiceServer).GetDeliveryRatingByOrder(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/EaterService/GetDeliveryRatingByOrder",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(EaterServiceServer).GetDeliveryRatingByOrder(ctx, req.(*GetDeliveryRatingByOrderRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // EaterService_ServiceDesc is the grpc.ServiceDesc for EaterService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -962,14 +898,6 @@ var EaterService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateDeliveryRating",
 			Handler:    _EaterService_UpdateDeliveryRating_Handler,
-		},
-		{
-			MethodName: "ListDeliveryRatingByEater",
-			Handler:    _EaterService_ListDeliveryRatingByEater_Handler,
-		},
-		{
-			MethodName: "GetDeliveryRatingByOrder",
-			Handler:    _EaterService_GetDeliveryRatingByOrder_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

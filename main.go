@@ -2,37 +2,52 @@ package main
 
 import (
 	"context"
-	"google.golang.org/grpc"
-	pb "eater-service/src/application/protos/eater"
-	appsvc "eater-service/src/application/services"
-	eatersvc "eater-service/src/domain/eater/services"
-	"eater-service/src/infrastructure/config"
-	"eater-service/src/infrastructure/jwt"
-	eaterrepo "eater-service/src/infrastructure/repositories/eater"
-	"eater-service/src/infrastructure/sms"
 	"fmt"
 	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	grpcserver "eater-service/src/application/grpc"
+	pb "eater-service/src/application/protos/eater"
+	appsvc "eater-service/src/application/services"
+	addresssvc "eater-service/src/domain/address/services"
+	eatersvc "eater-service/src/domain/eater/services"
+	ratingsvc "eater-service/src/domain/rating/services"
+	walletsvc "eater-service/src/domain/wallet/services"
+	orderysvc "eater-service/src/domain/order/services"
+	"eater-service/src/infrastructure/config"
+	"eater-service/src/infrastructure/jwt"
+	addressrepo "eater-service/src/infrastructure/repositories/address"
+	eaterrepo "eater-service/src/infrastructure/repositories/eater"
+	ratingrepo "eater-service/src/infrastructure/repositories/rating"
+	orderrepo "eater-service/src/infrastructure/repositories/order"
+	walletrepo "eater-service/src/infrastructure/repositories/wallet"
+	"eater-service/src/infrastructure/sms"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
-
-	grpcserver "eater-service/src/application/grpc"
-
-	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func main() {
+
 	config,err := config.Load()
 	if err != nil{
 		panic(err)
 	}
+
+	logger, err := config.NewLogger()
+	if err != nil {
+		panic(err)
+	}
+
+	defer logger.Sync()
 
 	dbURL := fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?connect_timeout=%d&sslmode=disable",
 		config.PostgresUser,
@@ -42,24 +57,37 @@ func main() {
 		config.PostgresDatabase,
 		60,
 	)
-	logger, err := config.NewLogger()
+	db,err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
+
 	if err != nil {
 		panic(err)
 	}
 
-	defer logger.Sync()
-
-	db,err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
+	
 	smsClient := sms.NewClient(config.SmsProvideApiKey)
 	tokenSvc := jwt.NewService(config.JWTSecret, config.JWTExpiresInSec)
-
-	if err != nil {
-		panic(err)
-	}
 	eaterRepo := eaterrepo.NewRepository(db)
+	addresRepo := addressrepo.NewRepository(db)
+	orderrepo := orderrepo.NewRepository(db)
+	ratingRepo := ratingrepo.NewRepository(db)
+	walletRepo := walletrepo.NewRepository(db)
+	
 
 	eaterSvc := eatersvc.NewEaterService(eaterRepo,smsClient,logger)
+	addressSvc := addresssvc.NewAddressService(addresRepo)
+	orderSvc := orderysvc.NewOrderService(orderrepo)
+	ratingSvc := ratingsvc.NewRatingService(ratingRepo)
+
+	walletSvc := walletsvc.NewWalletService(walletRepo)
+
+
+	
 	eaterApp := appsvc.NewEaterApplicationService(eaterSvc,tokenSvc)
+	addressApp := appsvc.NewAddressApplicationService(addressSvc)
+	ratingApp := appsvc.NewRatingApplicationService(ratingSvc)
+	orderApp := appsvc.NewOrderApplicationService(orderSvc)
+	walletApp := appsvc.NewWalletApplicationService(walletSvc)
+
 	root := gin.Default()
 
 	root.Use(cors.New(cors.Config{
@@ -68,15 +96,17 @@ func main() {
 		AllowHeaders: []string{"*"},
 		AllowCredentials: true,
 	}))
+
 	ctx,cancel := context.WithCancel(context.Background())
 	g,ctx := errgroup.WithContext(ctx)
 
 	osSignals := make(chan os.Signal,1)
-	
+
 	signal.Notify(osSignals,os.Interrupt,syscall.SIGINT, syscall.SIGTERM)
 	defer signal.Stop(osSignals)
 
 	var httpServer *http.Server
+
 	g.Go(func() error{
 		httpServer = &http.Server{
 			Addr: config.HttpPort,
@@ -90,14 +120,19 @@ func main() {
 		return nil
 	})
 
+
 	var grpcServer *grpc.Server
-	cancel()
 
 	g.Go(func () error {
 		server := grpcserver.NewServer(
 			eaterApp,
+			addressApp,
+			ratingApp,
+			walletApp,
+			orderApp,
+
 		)
-		grpcServer = grpc.NewServer(eaterApp)
+		grpcServer = grpc.NewServer()
 		pb.RegisterEaterServiceServer(grpcServer,server)
 
 		lis, err := net.Listen("tcp", config.GrpcPort)
@@ -112,4 +147,29 @@ func main() {
 		return grpcServer.Serve(lis)
 	})
 
+
+	select {
+	case <-osSignals:
+		logger.Info("main: received os signal, shutting down")
+		break
+	case <-ctx.Done():
+		break
+	}
+
+	cancel()
+
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(),5*time.Second)
+	defer shutdownCancel()
+
+	if httpServer != nil {
+		httpServer.Shutdown(shutdownCtx)
+	}
+
+	if grpcServer != nil {
+		grpcServer.GracefulStop()
+	}
+
+	if err := g.Wait(); err != nil {
+		logger.Error("main: server returned an error",zap.Error(err))
+	}
 }

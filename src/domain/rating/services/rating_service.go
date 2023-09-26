@@ -15,13 +15,13 @@ type RatingService interface {
 	RateDelivery(ctx context.Context, eaterID string, orderId string, rating int32, comment string) (*models.DeliveryRating, error)
 	UpdateDeliveryRating(ctx context.Context, deliveryRatingId string, rating int32, comment string) (*models.DeliveryRating, error)
 	GetDeliveryRatingByOrderId(ctx context.Context, orderId string) (*models.DeliveryRating, error)
-	ListDeliveryRatingByEaterId(ctx context.Context, eaterID string, sort string, page, pageSize int) ([]*models.DeliveryRating, error)
+	ListDeliveryRatingByEaterId(ctx context.Context, eaterID string) ([]*models.DeliveryRating, error)
 }
 type ratingSvcImpl struct {
 	ratingRepo repositories.RatingRepository
 }
 
-func NewWalletService(ratingRepo repositories.RatingRepository) RatingService {
+func NewRatingService(ratingRepo repositories.RatingRepository) RatingService {
 	return &ratingSvcImpl{
 		ratingRepo: ratingRepo,
 	}
@@ -126,9 +126,9 @@ func (s *ratingSvcImpl) GetDeliveryRatingByOrderId(ctx context.Context, orderId 
 
 }
 
-func (s *ratingSvcImpl) ListDeliveryRatingByEaterId(ctx context.Context, eaterID string, sort string, page, pageSize int) ([]*models.DeliveryRating, error) {
+func (s *ratingSvcImpl) ListDeliveryRatingByEaterId(ctx context.Context, eaterID string) ([]*models.DeliveryRating, error) {
 
-	deliveryRatings, err := s.ratingRepo.ListDeliveryRatingByEaterId(ctx, eaterID, sort, page, pageSize)
+	deliveryRatings, err := s.ratingRepo.ListDeliveryRatingByEaterId(ctx, eaterID)
 	if err != nil {
 		return nil, err
 	}

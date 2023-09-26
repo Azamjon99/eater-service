@@ -14,7 +14,7 @@ type RatingApplicationService interface {
 	UpdateRestaurantRating(ctx context.Context, request *pb.UpdateRestaurantRatingRequest) (*pb.UpdateRestaurantRatingResponse, error)
 	RateDelivery(ctx context.Context, request *pb.RateDeliveryRequest) (*pb.RateDeliveryResponse, error)
 	UpdateDeliveryRating(ctx context.Context, request *pb.UpdateDeliveryRatingRequest) (*pb.UpdateDeliveryRatingResponse, error)
-	ListDeliveryRatingByEaterId(ctx context.Context, request *pb.ListDeliveryRatingByEaterRequest) (*pb.ListDeliveryRatingByEaterResponse, error)
+	ListDeliveryRatingByEaterId(ctx context.Context, request *pb.ListRestaurantRatingByEaterRequest) (*pb.ListRestaurantRatingByEaterResponse, error)
 	GetDeliveryRatingByOrder(ctx context.Context, request *pb.GetDeliveryRatingByOrderRequest) (*pb.GetDeliveryRatingByOrderResponse, error)
 }
 
@@ -111,20 +111,18 @@ func (s *ratingAppSvcImpl) UpdateDeliveryRating(ctx context.Context, request *pb
 	return response, nil
 }
 
-func (s *ratingAppSvcImpl) ListDeliveryRatingByEaterId(ctx context.Context, request *pb.ListDeliveryRatingByEaterRequest) (*pb.ListDeliveryRatingByEaterResponse, error) {
+func (s *ratingAppSvcImpl) ListDeliveryRatingByEaterId(ctx context.Context, request *pb.ListRestaurantRatingByEaterRequest) (*pb.ListRestaurantRatingByEaterResponse, error) {
     deliveryRatings, err := s.ratingSvc.ListDeliveryRatingByEaterId(
         ctx,
         request.EaterId,
-        request.Sort,
-        int(request.Page),
-        int(request.PageSize),
+
     )
     if err != nil {
         return nil, err
     }
 
-	return &pb.ListDeliveryRatingByEaterResponse{
-		Ratings: dtos.ToDeliveryRatingsPB(deliveryRatings),
+	return &pb.ListRestaurantRatingByEaterResponse{
+		Ratings: dtos.ToRestaurantRatingsPB(deliveryRatings),
 	},nil
 }
 

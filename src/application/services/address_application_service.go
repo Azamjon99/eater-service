@@ -88,7 +88,7 @@ func (s *addressAppSvcImpl) DeleteAddress(ctx context.Context, req *pb.DeleteAdd
 		return nil, fmt.Errorf("Invalid or missing address_id: %s", req.AddressId)
 	}
 
-	_, err := s.addressSvc.DeleteAddress(ctx, req.AddressId)
+	_,err := s.addressSvc.DeleteAddress(ctx, req.AddressId)
 	if err != nil {
 		return nil, err
 	}

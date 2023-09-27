@@ -4,7 +4,7 @@ import (
 	"context"
 
 	walletsvc "github.com/Azamjon99/eater-service/src/domain/wallet/services"
-	pb "github.com/Azamjon99/eater-service/src/protos/eater"
+	pb "github.com/Azamjon99/eater-service/src/application/protos/eater"
 )
 
 type WalletApplicationService interface {
@@ -36,7 +36,6 @@ func (s *walletAppSvcImpl) AddCard(ctx context.Context, request *pb.AddPaymentCa
 			Id:          paymentCard.ID,
 			EaterId:     paymentCard.EaterID,
 			Number:      paymentCard.Number,
-			CreatedAt:   paymentCard.CreatedAt,
 		},
 	}, nil
 }
@@ -63,14 +62,13 @@ func (s *walletAppSvcImpl) GetCard(ctx context.Context, request *pb.GetPaymentCa
 			Id:          paymentCard.ID,
 			EaterId:     paymentCard.EaterID,
 			Number:      paymentCard.Number,
-			CreatedAt:   paymentCard.CreatedAt,
 		},
 	}, nil
 }
 
 func (s *walletAppSvcImpl) ListCardByEaterId(ctx context.Context, request *pb.ListPaymentCardByEaterRequest) (*pb.ListPaymentCardByEaterResponse, error) {
 
-	paymentCards, err := s.walletSvc.ListCardByEaterId(ctx, request.EaterId)
+	paymentCards, err := s.walletSvc.ListCardByEaterId(ctx, request.EaterId, request.Sort, int(request.Page), int(request.PageSize))
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +79,6 @@ func (s *walletAppSvcImpl) ListCardByEaterId(ctx context.Context, request *pb.Li
 			Id:          paymentCard.ID,
 			EaterId:     paymentCard.EaterID,
 			Number:      paymentCard.Number,
-			CreatedAt:   paymentCard.CreatedAt,
 		})
 	}
 

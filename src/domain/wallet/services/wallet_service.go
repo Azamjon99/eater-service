@@ -9,7 +9,7 @@ import (
 )
 
 type WalletService interface {
-	AddCard(ctx context.Context, eaterId, number, cardToken, restaurant string) (*models.PaymentCard, error)
+	AddCard(ctx context.Context, eaterId string, number string, cardToken string) (*models.PaymentCard, error)
 	DeleteCard(ctx context.Context, cardId string) (*models.PaymentCard, error)
 	GetCard(ctx context.Context, cardId string) (*models.PaymentCard, error)
 	ListCardByEaterId(ctx context.Context, eaterID string, sort string, page, pageSize int) ([]*models.PaymentCard, error)
@@ -24,14 +24,13 @@ func NewWalletService(walletRepo repositories.WalletRepository) WalletService {
 	}
 }
 
-func (s *walletSvcImpl) AddCard(ctx context.Context, eaterId, number, cardToken, restaurant string) (*models.PaymentCard, error) {
+func (s *walletSvcImpl) AddCard(ctx context.Context, eaterId , number, cardToken string) (*models.PaymentCard, error) {
 
 	paymentCard := &models.PaymentCard{
 		ID:         rand.UUID(),
 		EaterID:    eaterId,
 		Number:     number,
 		CardToken:  cardToken,
-		Restaurant: restaurant,
 		CreatedAt:  time.Now().UTC(),
 	}
 

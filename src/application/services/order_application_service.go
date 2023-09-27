@@ -28,10 +28,10 @@ func NewOrderApplicationService(orderSvc ordersvc.OrderService) OrderApplication
 }
 
 func (s *orderAppSvcImpl) CreateOrder(ctx context.Context, request *pb.PlaceOrderRequest) (*pb.PlaceOrderResponse, error) {
-	order, err := s.orderSvc.CreateOrder(ctx, request.EaterId, request.Cart)
+	order, err := s.orderSvc.CreateOrder(ctx, request.EaterId, request.Instruction, request.RestaurantId)
 	if err != nil {
 		return nil, err
-	}
+	} 
 
 	return &pb.PlaceOrderResponse{Order: order}, nil
 }
@@ -45,7 +45,7 @@ func (s *orderAppSvcImpl) UpdateOrder(ctx context.Context, request *pb.UpdateOrd
 	return &pb.UpdateOrderResponse{Order: order}, nil
 }
 
-func (s *orderAppSvcImpl) UpdateOrderByStatus(ctx context.Context, request *pb.UpdateOrderByStatusRequest) (*pb.UpdateOrderResponse, error) {
+func (s *orderAppSvcImpl) UpdateOrderByStatus(ctx context.Context, request *pb.UpdateOrderRequest) (*pb.UpdateOrderResponse, error) {
 	order, err := s.orderSvc.UpdateOrderByStatus(ctx, request.Order)
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (s *orderAppSvcImpl) UpdateOrderByStatus(ctx context.Context, request *pb.U
 	return &pb.UpdateOrderResponse{Order: order}, nil
 }
 
-func (s *orderAppSvcImpl) UpdateOrderPaymentByStatus(ctx context.Context, request *pb.UpdateOrderPaymentByStatusRequest) (*pb.UpdateOrderResponse, error) {
+func (s *orderAppSvcImpl) UpdateOrderPaymentByStatus(ctx context.Context, request *pb.UpdateOrderRequest) (*pb.UpdateOrderResponse, error) {
 	order, err := s.orderSvc.UpdateOrderPaymentByStatus(ctx, request.Order)
 	if err != nil {
 		return nil, err

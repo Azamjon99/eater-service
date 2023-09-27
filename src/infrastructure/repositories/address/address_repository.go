@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	tableAddress = "address.address"
+	tableAddress = "eater.addresses"
 )
 
 type addressRepoImpl struct {

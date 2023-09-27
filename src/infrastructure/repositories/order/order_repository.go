@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	tableOrder = "order.order"
+	tableOrder = "eater.orders"
 )
 
 type orderRepoImpl struct {

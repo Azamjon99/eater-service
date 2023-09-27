@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	tableDeliveryRating   = "rating.delivery_rating"
-	tableRestaurantRating = "rating.restaurant_rating"
+	tableDeliveryRating   = "eater.delivery_rating"
+	tableRestaurantRating = "eater.restaurant_rating"
 )
 
 type ratingRepoImpl struct {

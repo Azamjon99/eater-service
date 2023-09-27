@@ -3,7 +3,7 @@ CREATE SCHEMA IF NOT EXISTS eater;
 
 -- eaters
 CREATE TABLE IF NOT EXISTS eater.eaters (
-	id varchar(36) PRIMARY KEY,
+	id varchar(36) PRIMARY KEY, 
     phone_number VARCHAR(16),
     password_hash VARCHAR(255),
     password_salt VARCHAR(255),

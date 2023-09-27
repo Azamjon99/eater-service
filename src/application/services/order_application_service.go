@@ -2,7 +2,9 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 
+	"github.com/Azamjon99/eater-service/src/application/dtos"
 	pb "github.com/Azamjon99/eater-service/src/application/protos/eater"
 	ordersvc "github.com/Azamjon99/eater-service/src/domain/order/services"
 )
@@ -28,39 +30,99 @@ func NewOrderApplicationService(orderSvc ordersvc.OrderService) OrderApplication
 }
 
 func (s *orderAppSvcImpl) CreateOrder(ctx context.Context, request *pb.PlaceOrderRequest) (*pb.PlaceOrderResponse, error) {
-	order, err := s.orderSvc.CreateOrder(ctx, request.EaterId, request.Instruction, request.RestaurantId)
-	if err != nil {
-		return nil, err
-	} 
+    order, err := s.orderSvc.CreateOrder(ctx, request.EaterId, request.Instruction, request.RestaurantId)
+    if err != nil {
+        return nil, err
+    }
 
-	return &pb.PlaceOrderResponse{Order: order}, nil
+    orderJson, err := json.Marshal(order)
+    if err != nil {
+        return nil, err
+    }
+
+    var orderMap map[string]interface{}
+    if err := json.Unmarshal(orderJson, &orderMap); err != nil {
+        return nil, err
+    }
+
+    response := &pb.PlaceOrderResponse{
+        Order: &pb.Order{
+        },
+    }
+
+    return response, nil
 }
 
 func (s *orderAppSvcImpl) UpdateOrder(ctx context.Context, request *pb.UpdateOrderRequest) (*pb.UpdateOrderResponse, error) {
-	order, err := s.orderSvc.UpdateOrder(ctx, request.Order)
+	order, err := s.orderSvc.UpdateOrder(ctx, request.Order.Id,  request.Order.Instruction,  request.Order.EntityId)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.UpdateOrderResponse{Order: order}, nil
+	orderJson, err := json.Marshal(order)
+    if err != nil {
+        return nil, err
+    }
+
+    var orderMap map[string]interface{}
+    if err := json.Unmarshal(orderJson, &orderMap); err != nil {
+        return nil, err
+    }
+
+    response := &pb.UpdateOrderResponse{
+        Order: &pb.Order{
+        },
+    }
+
+    return response, nil
 }
 
 func (s *orderAppSvcImpl) UpdateOrderByStatus(ctx context.Context, request *pb.UpdateOrderRequest) (*pb.UpdateOrderResponse, error) {
-	order, err := s.orderSvc.UpdateOrderByStatus(ctx, request.Order)
+	order, err := s.orderSvc.UpdateOrderByStatus(ctx, request.Order.Id, request.Order.Status)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.UpdateOrderResponse{Order: order}, nil
+	orderJson, err := json.Marshal(order)
+    if err != nil {
+        return nil, err
+    }
+
+    var orderMap map[string]interface{}
+    if err := json.Unmarshal(orderJson, &orderMap); err != nil {
+        return nil, err
+    }
+
+    response := &pb.UpdateOrderResponse{
+        Order: &pb.Order{
+        },
+    }
+
+    return response, nil
 }
 
 func (s *orderAppSvcImpl) UpdateOrderPaymentByStatus(ctx context.Context, request *pb.UpdateOrderRequest) (*pb.UpdateOrderResponse, error) {
-	order, err := s.orderSvc.UpdateOrderPaymentByStatus(ctx, request.Order)
+	order, err := s.orderSvc.UpdateOrderPaymentByStatus(ctx, request.Order.Id, request.Order.PaymentStatus)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.UpdateOrderResponse{Order: order}, nil
+	orderJson, err := json.Marshal(order)
+    if err != nil {
+        return nil, err
+    }
+
+    var orderMap map[string]interface{}
+    if err := json.Unmarshal(orderJson, &orderMap); err != nil {
+        return nil, err
+    }
+
+    response := &pb.UpdateOrderResponse{
+        Order: &pb.Order{
+        },
+    }
+
+    return response, nil
 }
 
 func (s *orderAppSvcImpl) DeleteOrder(ctx context.Context, request *pb.DeleteOrderRequest) (*pb.DeleteOrderResponse, error) {
@@ -78,7 +140,22 @@ func (s *orderAppSvcImpl) GetOrderById(ctx context.Context, request *pb.GetOrder
 		return nil, err
 	}
 
-	return &pb.GetOrderResponse{Order: order}, nil
+	orderJson, err := json.Marshal(order)
+    if err != nil {
+        return nil, err
+    }
+
+    var orderMap map[string]interface{}
+    if err := json.Unmarshal(orderJson, &orderMap); err != nil {
+        return nil, err
+    }
+
+    response := &pb.GetOrderResponse{
+        Order: &pb.Order{
+        },
+    }
+
+    return response, nil
 }
 
 func (s *orderAppSvcImpl) ListOrderByEaterId(ctx context.Context, request *pb.ListOrderByEaterRequest) (*pb.ListOrderByEaterResponse, error) {
@@ -86,6 +163,11 @@ func (s *orderAppSvcImpl) ListOrderByEaterId(ctx context.Context, request *pb.Li
 	if err != nil {
 		return nil, err
 	}
+        pbOrder := dtos.ConvertToPbOrder(orders)
+    
+    response := &pb.ListOrderByEaterResponse{
+        Orders: pbOrder,
+    }
 
-	return &pb.ListOrderByEaterResponse{Orders: orders}, nil
+    return response, nil
 }

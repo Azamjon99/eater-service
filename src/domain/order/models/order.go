@@ -7,14 +7,14 @@ type Order struct {
 	EaterID       string          `json:"eater_id"`
 	Instruction   string          `json:"instruction"`
 	RestaurantID  string          `json:"restaurant_id"` // restaurant entity id
-	Restaurant    *RestaurantInfo `json:"restaurant"`
-	Delivery      *DeliveryInfo   `json:"delivery"`
-	Payment       *PaymentInfo    `json:"payment"`
-	Items         []*OrderItem    `json:"items"`
+	RestaurantInfo    *RestaurantInfo `json:"restaurant"`
+	DeliveryInfo      *DeliveryInfo   `json:"delivery"`
+	PaymentInfo       *PaymentInfo    `json:"payment"`
+	OrderItem         []*OrderItem    `json:"items"`
 	Status        string          `json:"status"`
 	PaymentStatus string          `json:"payment_status"`
 	CreatedAt     time.Time       `json:"created_at"`
-	UpdatedAt     time.Time       `json:"updated_at"`
+	UpdatedAt     time.Time       `json:"updated_at"` 
 }
 
 type OrderItem struct {

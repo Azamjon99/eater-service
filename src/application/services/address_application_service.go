@@ -32,19 +32,19 @@ func NewAddressApplicationService(
 
 func (s *addressAppSvcImpl) CreateAddress(ctx context.Context, req *pb.AddAddressRequest) (*pb.AddAddressResponse, error) {
 	if req.EaterId == "" {
-		return nil, fmt.Errorf("Invalid or missing eater_id: %s", req.EaterId)
+		return nil, fmt.Errorf("invalid or missing eater_id: %s", req.EaterId)
 	}
 
 	if req.Name == "" {
-		return nil, fmt.Errorf("Invalid or missing name: %s", req.Name)
+		return nil, fmt.Errorf("invalid or missing name: %s", req.Name)
 	}
 
 	if req.Longitude == 0 {
-		return nil, fmt.Errorf("Invalid or missing longitude: %f", req.Longitude)
+		return nil, fmt.Errorf("invalid or missing longitude: %f", req.Longitude)
 	}
 
 	if req.Latitude == 0 {
-		return nil, fmt.Errorf("Invalid or missing latitude: %f", req.Latitude)
+		return nil, fmt.Errorf("invalid or missing latitude: %f", req.Latitude)
 	}
 
 	address, err := s.addressSvc.CreateAddress(ctx, req.EaterId, req.Name, req.Longitude, req.Latitude)
@@ -59,19 +59,19 @@ func (s *addressAppSvcImpl) CreateAddress(ctx context.Context, req *pb.AddAddres
 
 func (s *addressAppSvcImpl) UpdateAddress(ctx context.Context, req *pb.UpdateAddressRequest) (*pb.UpdateAddressResponse, error) {
 	if req.AddressId == "" {
-		return nil, fmt.Errorf("Invalid or missing address_id: %s", req.AddressId)
+		return nil, fmt.Errorf("invalid or missing address_id: %s", req.AddressId)
 	}
 
 	if req.Name == "" {
-		return nil, fmt.Errorf("Invalid or missing name: %s", req.Name)
+		return nil, fmt.Errorf("invalid or missing name: %s", req.Name)
 	}
 
 	if req.Longitude == 0 {
-		return nil, fmt.Errorf("Invalid or missing longitude: %f", req.Longitude)
+		return nil, fmt.Errorf("invalid or missing longitude: %f", req.Longitude)
 	}
 
 	if req.Latitude == 0 {
-		return nil, fmt.Errorf("Invalid or missing latitude: %f", req.Latitude)
+		return nil, fmt.Errorf("invalid or missing latitude: %f", req.Latitude)
 	}
 
 	address, err := s.addressSvc.UpdateAddress(ctx, req.AddressId, req.Name, req.Longitude, req.Latitude)
@@ -87,7 +87,7 @@ func (s *addressAppSvcImpl) UpdateAddress(ctx context.Context, req *pb.UpdateAdd
 
 func (s *addressAppSvcImpl) DeleteAddress(ctx context.Context, req *pb.DeleteAddressRequest) (*pb.DeleteAddressResponse, error) {
 	if req.AddressId == "" {
-		return nil, fmt.Errorf("Invalid or missing address_id: %s", req.AddressId)
+		return nil, fmt.Errorf("invalid or missing address_id: %s", req.AddressId)
 	}
 
 	_,err := s.addressSvc.DeleteAddress(ctx, req.AddressId)
@@ -100,7 +100,7 @@ func (s *addressAppSvcImpl) DeleteAddress(ctx context.Context, req *pb.DeleteAdd
 
 func (s *addressAppSvcImpl) GetAddressById(ctx context.Context, req *pb.GetAddressRequest) (*pb.GetAddressResponse, error) {
 	if req.AddressId == "" {
-		return nil, fmt.Errorf("Invalid or missing address_id: %s", req.AddressId)
+		return nil, fmt.Errorf("invalid or missing address_id: %s", req.AddressId)
 	}
 	var address *models.Address
 
@@ -116,7 +116,7 @@ func (s *addressAppSvcImpl) GetAddressById(ctx context.Context, req *pb.GetAddre
 
 func (s *addressAppSvcImpl) ListAddressByEaterId(ctx context.Context, req *pb.ListAddressByEaterRequest) (*pb.ListAddressByEaterResponse, error) {
 	if req.EaterId == "" {
-		return nil, fmt.Errorf("Invalid or missing eater_id: %s", req.EaterId)
+		return nil, fmt.Errorf("invalid or missing eater_id: %s", req.EaterId)
 	}
 
 	address, err := s.addressSvc.ListAddressByEaterId(ctx, req.EaterId, req.Sort, int(req.Page), int(req.PageSize))
@@ -126,7 +126,7 @@ func (s *addressAppSvcImpl) ListAddressByEaterId(ctx context.Context, req *pb.Li
 
 
 	return &pb.ListAddressByEaterResponse{
-		Address: dtos.NewListDeliveryRatingResponse(address),
-	},nil
+        Addresses: dtos.ConvertToPbAddress(address),
+    }, nil
 
 }

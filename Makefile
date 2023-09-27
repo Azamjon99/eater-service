@@ -22,7 +22,7 @@ clear:
 	rm -rf genprotos/*
 gen-eater:
 	protoc \
-	--go_out=./src/application/protos \
+    --go_out=./src/application/protos \
 	--go_opt=paths=import \
 	--go-grpc_out=./src/application/protos \
 	--go-grpc_opt=paths=import \

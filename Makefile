@@ -30,7 +30,7 @@ gen-eater:
 	$(PWD)/src/infrastructure/protos/eater/*.proto
 
 
-docker: bin-lunix
+docker: 
 	docker build --rm -t eater-svc -f ${PWD}/deploy/Dockerfile .
 
 
@@ -47,7 +47,9 @@ deploy-client:
 	docker run --rm --network=host --name=app client-app
 
 compose-up:
-	docker-compose -f docker-compose/docker-compose.yml up
+	docker-compose -f deploy/docker-compose.yml up
 
 compose-down:
-	docker-compose -f docker-compose/docker-compose.yml down	
+	docker-compose -f deploy/docker-compose.yml down	
+network-create:
+	docker network create -d bridge mcs-network

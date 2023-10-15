@@ -8,7 +8,7 @@ import (
 
 type OrderRepository interface {
 	WithTx(ctx context.Context, f func(r OrderRepository) error) error
-	CreateOrder(ctx context.Context, orders *models.Order) error
+	PlaceOrder(ctx context.Context, orders *models.Order) error
 	UpdateOrder(ctx context.Context, orders *models.Order) error
 	UpdateOrderByStatus(ctx context.Context, orderId string, status string) error
 	UpdateOrderPaymentByStatus(ctx context.Context, orderId string, paymentStatus string) error

@@ -115,7 +115,7 @@ func (s *Server) ListOrderByEater(ctx context.Context, r *pb.ListOrderByEaterReq
 
 }
 func (s *Server) PlaceOrder(ctx context.Context, r *pb.PlaceOrderRequest)(*pb.PlaceOrderResponse,error){
-	return s.orderApp.CreateOrder(ctx,r)
+	return s.orderApp.PlaceOrder(ctx,r)
 
 }
 

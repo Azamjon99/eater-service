@@ -11,6 +11,7 @@ import (
 	"time"
 
 	grpcserver "github.com/Azamjon99/eater-service/src/application/grpc"
+	integrationevents "github.com/Azamjon99/eater-service/src/application/integration_events"
 	pb "github.com/Azamjon99/eater-service/src/application/protos/eater"
 	appsvc "github.com/Azamjon99/eater-service/src/application/services"
 	addresssvc "github.com/Azamjon99/eater-service/src/domain/address/services"
@@ -36,6 +37,7 @@ import (
 )
 
 func main() {
+	ctx, cancel := context.WithCancel(context.Background())
 
 	config, err := config.Load()
 	if err != nil {
@@ -62,7 +64,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
+	producer := integrationevents.NewProducer(ctx, config, logger)
 	smsClient := sms.NewClient(config.SmsProvideApiKey)
 	tokenSvc := jwt.NewService(config.JWTSecret, config.JWTExpiresInSec)
 	eaterRepo := eaterrepo.NewRepository(db)
@@ -81,8 +83,8 @@ func main() {
 	eaterApp := appsvc.NewEaterApplicationService(eaterSvc, tokenSvc)
 	addressApp := appsvc.NewAddressApplicationService(addressSvc)
 	ratingApp := appsvc.NewRatingApplicationService(ratingSvc)
-	orderApp := appsvc.NewOrderApplicationService(orderSvc)
-	walletApp := appsvc.NewWalletApplicationService(walletSvc)
+	orderApp := appsvc.NewOrderApplicationService(orderSvc, producer,logger)
+	walletApp := appsvc.NewWalletApplicationService(walletSvc, producer,logger)
 
 	root := gin.Default()
 
@@ -93,7 +95,6 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	ctx, cancel := context.WithCancel(context.Background())
 	g, ctx := errgroup.WithContext(ctx)
 
 	osSignals := make(chan os.Signal, 1)

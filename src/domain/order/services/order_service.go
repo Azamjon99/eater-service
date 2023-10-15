@@ -9,7 +9,7 @@ import (
 )
 
 type OrderService interface {
-	CreateOrder(ctx context.Context, eaterId string, instruction string, restaurantID string) (*models.Order, error)
+	PlaceOrder(ctx context.Context, eaterId string, instruction string, restaurantID string) (*models.Order, error)
 	UpdateOrder(ctx context.Context, orderId string, instruction string, restaurantID string) (*models.Order, error)
 	UpdateOrderByStatus(ctx context.Context, orderId string, status string) (*models.Order, error)
 	UpdateOrderPaymentByStatus(ctx context.Context, orderId string, paymentStatus string) (*models.Order, error)
@@ -28,7 +28,7 @@ func NewOrderService(orderRepo repositories.OrderRepository) *orderSvcImpl {
 	}
 }
 
-func (s *orderSvcImpl) CreateOrder(ctx context.Context, eaterId string, instruction string, restaurantID string) (*models.Order, error) {
+func (s *orderSvcImpl) PlaceOrder(ctx context.Context, eaterId string, instruction string, restaurantID string) (*models.Order, error) {
 
 	order := &models.Order{
 		ID:           rand.UUID(),
@@ -39,7 +39,7 @@ func (s *orderSvcImpl) CreateOrder(ctx context.Context, eaterId string, instruct
 		UpdatedAt:    time.Now().UTC(),
 	}
 
-	err := s.orderRepo.CreateOrder(ctx, order)
+	err := s.orderRepo.PlaceOrder(ctx, order)
 	if err != nil {
 		return nil, err
 	}

@@ -3,8 +3,12 @@ package service
 import (
 	"context"
 
-	walletsvc "github.com/Azamjon99/eater-service/src/domain/wallet/services"
+	cardadded "github.com/Azamjon99/eater-service/src/application/integration_events/events/card_added"
+	carddeleted "github.com/Azamjon99/eater-service/src/application/integration_events/events/card_deleted"
 	pb "github.com/Azamjon99/eater-service/src/application/protos/eater"
+	walletsvc "github.com/Azamjon99/eater-service/src/domain/wallet/services"
+	"github.com/Azamjon99/eater-service/src/infrastructure/pubsub"
+	"go.uber.org/zap"
 )
 
 type WalletApplicationService interface {
@@ -16,11 +20,15 @@ type WalletApplicationService interface {
 
 type walletAppSvcImpl struct {
 	walletSvc walletsvc.WalletService
+	producer pubsub.Producer
+    logger *zap.Logger
 }
 
-func NewWalletApplicationService(walletSvc walletsvc.WalletService) WalletApplicationService {
+func NewWalletApplicationService(walletSvc walletsvc.WalletService, producer pubsub.Producer,logger *zap.Logger) WalletApplicationService {
 	return &walletAppSvcImpl{
 		walletSvc: walletSvc,
+		producer: producer,
+        logger: logger,
 	}
 }
 
@@ -30,7 +38,10 @@ func (s *walletAppSvcImpl) AddCard(ctx context.Context, request *pb.AddPaymentCa
 	if err != nil {
 		return nil, err
 	}
-
+	event := cardadded.NewEvent(paymentCard)
+	if err := s.producer.PublishWithKey(event.Topic(),paymentCard.ID,event.Payload(),nil);err!=nil{
+		s.logger.Error("error pushing message",zap.Error(err),zap.String("topic",event.Topic()))
+	}
 	return &pb.AddPaymentCardResponse{
 		Card: &pb.PaymentCardView{
 			Id:          paymentCard.ID,
@@ -46,7 +57,10 @@ func (s *walletAppSvcImpl) DeleteCard(ctx context.Context, request *pb.DeletePay
 	if err != nil {
 		return nil, err
 	}
-
+	event := carddeleted.NewEvent(request.CardId)
+	if err := s.producer.PublishWithKey(event.Topic(),request.CardId,event.Payload(),nil);err!=nil{
+		s.logger.Error("error pushing message",zap.Error(err),zap.String("topic",event.Topic()))
+	}
 	return &pb.DeletePaymentCardResponse{}, nil
 }
 

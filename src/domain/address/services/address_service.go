@@ -10,7 +10,7 @@ import (
 
 
 type AddressService interface {
-	CreateAddress(ctx context.Context, eaterId string, name string, long, lat float64) (*models.Address, error)
+	SaveAddress(ctx context.Context, eaterId string, name string, long, lat float64) (*models.Address, error)
 	UpdateAddress(ctx context.Context, addressId string, name string, long, lat float64) (*models.Address, error)
 	DeleteAddress(ctx context.Context, addressId string) (*models.Address, error)
 	GetAddressById(ctx context.Context, addressId string) (*models.Address, error)
@@ -26,7 +26,7 @@ func NewAddressService(addressRepo repositories.AddressRepository) AddressServic
 	}
 }
 
-func (s *addressSvcImpl) CreateAddress(ctx context.Context, eaterId string, name string, long, lat float64) (*models.Address, error) {
+func (s *addressSvcImpl) SaveAddress(ctx context.Context, eaterId string, name string, long, lat float64) (*models.Address, error) {
 
 	location := &models.Location{
 		Longitude: long,
@@ -42,7 +42,7 @@ func (s *addressSvcImpl) CreateAddress(ctx context.Context, eaterId string, name
 		UpdatedAt: time.Now().UTC(),
 	}
 
-	err := s.addressRepo.CreateAddress(ctx,address)
+	err := s.addressRepo.SaveAddress(ctx,address)
 
 	return address,err
 

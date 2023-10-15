@@ -47,7 +47,7 @@ func (s *addressAppSvcImpl) CreateAddress(ctx context.Context, req *pb.AddAddres
 		return nil, fmt.Errorf("invalid or missing latitude: %f", req.Latitude)
 	}
 
-	address, err := s.addressSvc.CreateAddress(ctx, req.EaterId, req.Name, req.Longitude, req.Latitude)
+	address, err := s.addressSvc.SaveAddress(ctx, req.EaterId, req.Name, req.Longitude, req.Latitude)
 	if err != nil {
 		return nil, err
 	}

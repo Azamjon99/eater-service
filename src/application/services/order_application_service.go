@@ -5,12 +5,16 @@ import (
 	"encoding/json"
 
 	"github.com/Azamjon99/eater-service/src/application/dtos"
+	ordercanceled "github.com/Azamjon99/eater-service/src/application/integration_events/events/order_cancelled"
+	ordercreated "github.com/Azamjon99/eater-service/src/application/integration_events/events/order_created"
 	pb "github.com/Azamjon99/eater-service/src/application/protos/eater"
 	ordersvc "github.com/Azamjon99/eater-service/src/domain/order/services"
+	"github.com/Azamjon99/eater-service/src/infrastructure/pubsub"
+	"go.uber.org/zap"
 )
 
 type OrderApplicationService interface {
-	CreateOrder(ctx context.Context, request *pb.PlaceOrderRequest) (*pb.PlaceOrderResponse, error)
+	PlaceOrder(ctx context.Context, request *pb.PlaceOrderRequest) (*pb.PlaceOrderResponse, error)
 	UpdateOrder(ctx context.Context, request *pb.UpdateOrderRequest) (*pb.UpdateOrderResponse, error)
 	UpdateOrderByStatus(ctx context.Context, request *pb.UpdateOrderRequest) (*pb.UpdateOrderResponse, error)
 	UpdateOrderPaymentByStatus(ctx context.Context, request *pb.UpdateOrderRequest) (*pb.UpdateOrderResponse, error)
@@ -21,16 +25,20 @@ type OrderApplicationService interface {
 
 type orderAppSvcImpl struct {
 	orderSvc ordersvc.OrderService
+    producer pubsub.Producer
+    logger *zap.Logger
 }
 
-func NewOrderApplicationService(orderSvc ordersvc.OrderService) OrderApplicationService {
+func NewOrderApplicationService(orderSvc ordersvc.OrderService, producer pubsub.Producer,logger *zap.Logger) OrderApplicationService {
 	return &orderAppSvcImpl{
 		orderSvc: orderSvc,
+        producer: producer,
+        logger: logger,
 	}
 }
 
-func (s *orderAppSvcImpl) CreateOrder(ctx context.Context, request *pb.PlaceOrderRequest) (*pb.PlaceOrderResponse, error) {
-    order, err := s.orderSvc.CreateOrder(ctx, request.EaterId, request.Instruction, request.RestaurantId)
+func (s *orderAppSvcImpl) PlaceOrder(ctx context.Context, request *pb.PlaceOrderRequest) (*pb.PlaceOrderResponse, error) {
+    order, err := s.orderSvc.PlaceOrder(ctx, request.EaterId, request.Instruction, request.RestaurantId)
     if err != nil {
         return nil, err
     }
@@ -45,6 +53,10 @@ func (s *orderAppSvcImpl) CreateOrder(ctx context.Context, request *pb.PlaceOrde
         return nil, err
     }
 
+    event := ordercreated.NewEvent(order)
+    if err:= s.producer.PublishWithKey(event.Topic(), order.ID, event.Payload(), nil); err != nil{
+        s.logger.Error("error pushing message", zap.Error(err), zap.String("Topic", event.Topic()))
+    }
     response := &pb.PlaceOrderResponse{
         Order: &pb.Order{
         },
@@ -92,7 +104,12 @@ func (s *orderAppSvcImpl) UpdateOrderByStatus(ctx context.Context, request *pb.U
     if err := json.Unmarshal(orderJson, &orderMap); err != nil {
         return nil, err
     }
-
+	if request.Order.Status == "2" {
+		event := ordercanceled.NewEvent(request.Order.Id)
+		if err := s.producer.PublishWithKey(event.Topic(),request.Order.Id,event.Payload(),nil);err!=nil{
+			s.logger.Error("error pushing message",zap.Error(err),zap.String("topic",event.Topic()))
+		}
+	}
     response := &pb.UpdateOrderResponse{
         Order: &pb.Order{
         },

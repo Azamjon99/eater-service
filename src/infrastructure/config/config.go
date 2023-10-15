@@ -19,6 +19,9 @@ type Config struct {
 	SmsProvideApiKey string
 	JWTSecret        string
 	JWTExpiresInSec  int
+	KafkaAddress	string
+	KafkaClientId	string
+	KafkaGroupId	string
 }
 
 func Load() (Config, error) {
@@ -49,7 +52,9 @@ func Load() (Config, error) {
 	config.SmsProvideApiKey = v.GetString("SMS_PROVIDER_API_KEY")
 	config.JWTSecret = v.GetString("JWT_SECRET")
 	config.JWTExpiresInSec = v.GetInt("JWT_EXPIRES_IN_SEC")
-
+	config.KafkaAddress = v.GetString("KAFKA_ADDRESS")
+	config.KafkaClientId = v.GetString("KAFKA_CLIENT_ID")
+	config.KafkaGroupId = v.GetString("KAFKA_GROUP_ID")
 	return config, nil
 }
 

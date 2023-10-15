@@ -23,7 +23,7 @@ func NewRepository(db *gorm.DB) repositories.AddressRepository {
 	}
 }
 
-func (r *addressRepoImpl) CreateAddress(ctx context.Context, address *models.Address) error {
+func (r *addressRepoImpl) SaveAddress(ctx context.Context, address *models.Address) error {
 	result := r.db.WithContext(ctx).Table(tableAddress).Create(address)
 	if result.Error != nil {
 		return result.Error

@@ -38,7 +38,7 @@ func (r *orderRepoImpl) WithTx(ctx context.Context, callback func(r repositories
 	return nil
 }
 
-func (r *orderRepoImpl) CreateOrder(ctx context.Context, orders *models.Order) error {
+func (r *orderRepoImpl) PlaceOrder(ctx context.Context, orders *models.Order) error {
 	result := r.db.WithContext(ctx).Table(tableOrder).Create(orders)
 	if result.Error != nil {
 		return result.Error

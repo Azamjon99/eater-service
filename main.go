@@ -82,7 +82,7 @@ func main() {
 
 	eaterApp := appsvc.NewEaterApplicationService(eaterSvc, tokenSvc)
 	addressApp := appsvc.NewAddressApplicationService(addressSvc)
-	ratingApp := appsvc.NewRatingApplicationService(ratingSvc)
+	ratingApp := appsvc.NewRatingApplicationService(ratingSvc, producer,logger)
 	orderApp := appsvc.NewOrderApplicationService(orderSvc, producer,logger)
 	walletApp := appsvc.NewWalletApplicationService(walletSvc, producer,logger)
 

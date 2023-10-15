@@ -2,11 +2,15 @@ package service
 
 import (
 	"context"
-	
-	"github.com/Azamjon99/eater-service/src/application/dtos"
-	ratingsvc "github.com/Azamjon99/eater-service/src/domain/rating/services"
-	pb "github.com/Azamjon99/eater-service/src/application/protos/eater"
 
+	"github.com/Azamjon99/eater-service/src/application/dtos"
+	orderrated "github.com/Azamjon99/eater-service/src/application/integration_events/events/order_rated"
+	restaurantrated "github.com/Azamjon99/eater-service/src/application/integration_events/events/restaurant_rated"
+	restaurantratingupdated "github.com/Azamjon99/eater-service/src/application/integration_events/events/restaurant_rating_updated"
+	pb "github.com/Azamjon99/eater-service/src/application/protos/eater"
+	ratingsvc "github.com/Azamjon99/eater-service/src/domain/rating/services"
+	"github.com/Azamjon99/eater-service/src/infrastructure/pubsub"
+	"go.uber.org/zap"
 )
 
 type RatingApplicationService interface {
@@ -20,13 +24,19 @@ type RatingApplicationService interface {
 
 type ratingAppSvcImpl struct {
 	ratingSvc ratingsvc.RatingService
+	producer  pubsub.Producer
+	logger  *zap.Logger
 }
 
 func NewRatingApplicationService(
 	ratingSvc ratingsvc.RatingService,
+	producer pubsub.Producer,
+	logger *zap.Logger,
 ) RatingApplicationService {
 	return &ratingAppSvcImpl{
 		ratingSvc: ratingSvc,
+		producer: producer,
+		logger: logger,
 	}
 }
 
@@ -44,6 +54,10 @@ func (s *ratingAppSvcImpl) RateRestaurant(ctx context.Context, request *pb.RateR
 		Comment:      restaurantRating.Comment,
 	}
 
+	event := restaurantrated.NewEvent(request.RestaurantId,restaurantRating.ID,request.Comment,int(request.Rating))
+	if err := s.producer.PublishWithKey(event.Topic(),restaurantRating.ID,event.Payload(),nil);err!=nil{
+		s.logger.Error("error pushing message",zap.Error(err),zap.String("topic",event.Topic()))
+	}
 	response := &pb.RateRestaurantResponse{
 		Rating: pbRestaurantRating,
 	}
@@ -64,6 +78,10 @@ func (s *ratingAppSvcImpl) UpdateRestaurantRating(ctx context.Context, request *
 		Comment:      restaurantRating.Comment,
 	}
 
+	event := restaurantratingupdated.NewEvent(request.RatingId,request.Comment,int(request.Rating))
+	if err := s.producer.PublishWithKey(event.Topic(),request.RatingId,event.Payload(),nil);err!=nil{
+		s.logger.Error("error pushing message",zap.Error(err),zap.String("topic",event.Topic()))
+	}
 	response := &pb.UpdateRestaurantRatingResponse{
 		Rating: pbRestaurantRating,
 	}
@@ -83,7 +101,10 @@ func (s *ratingAppSvcImpl) RateDelivery(ctx context.Context, request *pb.RateDel
 		Rating:       deliveryRating.Rating, 
 		Comment:      deliveryRating.Comment,
 	}
-
+	event := orderrated.NewEvent(deliveryRating.ID,request.OrderId,request.Comment,int(request.Rating))
+	if err := s.producer.PublishWithKey(event.Topic(),deliveryRating.ID,event.Payload(),nil);err!=nil{
+		s.logger.Error("error pushing message",zap.Error(err),zap.String("topic",event.Topic()))
+	}
 	response := &pb.RateDeliveryResponse{
 		Rating: pbRestaurantRating,
 	}
@@ -103,7 +124,10 @@ func (s *ratingAppSvcImpl) UpdateDeliveryRating(ctx context.Context, request *pb
 		Rating:       deliveryRating.Rating, 
 		Comment:      deliveryRating.Comment,
 	}
-
+	event := orderrated.NewEvent(deliveryRating.ID,deliveryRating.OrderID,request.Comment,int(request.Rating))
+	if err := s.producer.PublishWithKey(event.Topic(),deliveryRating.ID,event.Payload(),nil);err!=nil{
+		s.logger.Error("error pushing message",zap.Error(err),zap.String("topic",event.Topic()))
+	}
 	response := &pb.UpdateDeliveryRatingResponse{
 		Rating: pbRestaurantRating,
 	}
